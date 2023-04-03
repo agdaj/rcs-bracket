@@ -1,0 +1,58 @@
+/* index.css */
+
+body {
+  background-color: crimson;
+}
+
+.card-icon {
+  filter: invert(25%) sepia(92%) saturate(7491%) hue-rotate(359deg) brightness(101%) contrast(121%);
+  width: 1em;
+}
+
+.link-char-select img {
+  outline: black solid 1px;
+  width: 5em;
+  max-width: 100%;
+}
+
+.modal-char-ss .modal-content {
+  text-align: center;
+  border-color: transparent;
+  background-color: transparent;
+}
+
+.modal-char-select {
+  display: inline-block;
+}
+
+.modal-char-select img {
+  width: 5em;
+  max-width: 100%;
+}
+
+.modal-char-select img:hover {
+  cursor: pointer;
+}
+
+.render-skin img {
+  width: 16em;
+  max-width: 100%;
+}
+
+.btn-skin img {
+  width: 1.5em;
+}
+
+.l-check {
+  display: none;
+}
+
+@media (max-width: 575.98px) {
+  #swapPlayers img {
+    transform: rotate(90deg);
+  }
+
+  #swapCommentators img {
+    transform: rotate(90deg);
+  }
+}

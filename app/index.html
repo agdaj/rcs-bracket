@@ -1,0 +1,296 @@
+<!--index.html-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data:">
+    <title>RCS Bracket Manager</title>
+
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT">
+    <link href="assets/css/index.css" rel="stylesheet">
+  </head>
+  <body>
+    <form id="bracketForm">
+      <div class="container-fluid text-center pb-5">
+          <div class="card mt-3 mb-3" id="tournamentNameCard">
+            <div class="card-header">
+              <span id="tournamentNameHeader">
+                <img src="assets/images/svg/trophy-svgrepo-com.svg" alt="Trophy SVG" class="card-icon">
+                  Name
+                <span id="tournamentNameHelp" class="form-text">
+                  Enter the tournament's name
+                </span>
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <input class="form-control" type="text" name="tournamentName" id="tournamentName" placeholder="Name" aria-describedby="tournamentNameHelp">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-3 mb-3" id="bracketCard">
+            <div class="card-header">
+              <span id="bracketHeader">
+                <img src="assets/images/svg/tournament-svgrepo-com.svg" alt="Tournament SVG" class="card-icon">
+                  Bracket
+                <span id="bracketHelp" class="form-text">
+                  Select the bracket type and round
+                </span>
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bracketType" id="singlesRadio" value="Singles" checked>
+                    <label class="form-check-label" for="singlesRadio">Singles</label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bracketType" id="doublesRadio" value="Doubles" disabled>
+                    <label class="form-check-label" for="doublesRadio">Doubles</label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bracketType" id="squadsRadio" value="Squad Strike" disabled>
+                    <label class="form-check-label" for="squadsRadio">Squad Strike</label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bracketType" id="crewsRadio" value="Crews" disabled>
+                    <label class="form-check-label" for="crewsRadio">Crews</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-8">
+                  <div class="row">
+                    <div class="col-12 col-sm-8 mb-1 mb-sm-0" id="roundDiv">
+                      <select class="form-select" name="round" id="round" aria-label="Round select">
+                        <option selected>Winners Round</option>
+                        <option>Winners Quarter Finals</option>
+                        <option>Winners Semi Finals</option>
+                        <option>Winners Finals</option>
+                        <option>Losers Round</option>
+                        <option>Losers Quarter Finals</option>
+                        <option>Losers Semi Finals</option>
+                        <option>Losers Finals</option>
+                        <option>Grand Finals</option>
+                        <option>Pools</option>
+                        <option>Friendlies</option>
+                        <option>Money Match</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-sm-4 mb-3 mb-sm-0" id="roundNumDiv">
+                      <input class="form-control" type="number" min="1" step="1" name="roundNum" id="roundNum" value="1" aria-describedby="bracketHelp">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <select class="form-select" name="bestOf" id="bestOf" aria-label="Best of select">
+                    <option selected>Best of 3</option>
+                    <option>Best of 5</option>
+                    <option>First to 5</option>
+                    <option>First to 10</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-3 mb-3" id="playerCard">
+            <div class="card-header">
+              <span id="playerHeader">
+                <img src="assets/images/svg/users-svgrepo-com.svg" alt="Users SVG" class="card-icon">
+                  Players
+                <span id="playerHelp" class="form-text">
+                  Enter player details, score and characters
+                </span>
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-12 col-sm-5">
+                  <div class="row justify-content-center justify-content-sm-end mb-3">
+                    <div class="col-3 col-sm-4 order-sm-last">
+                      <input class="form-control" type="number" min="0" step="1" name="player1Score" id="player1Score" value="0" aria-describedby="playerHelp">
+                    </div>
+                    <div class="col-3 order-sm-first l-check">
+                      <input class="btn-check" type="checkbox" name="player1LCheck" id="player1LCheck" autocomplete="off">
+                      <label class="btn btn-danger" for="player1LCheck">[L]</label>
+                    </div>
+                  </div>
+                  <div class="row justify-content-center justify-content-sm-end mb-3">
+                    <div class="col-12">
+                      <input type="hidden" name="player1Colour" id="player1Colour">
+                      <div class="input-group" id="player1NameGroup">
+                        <button class="btn btn-outline-secondary dropdown-toggle" id="player1ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                        <ul class="dropdown-menu" id="player1ColourList"></ul>
+                        <input class="form-control" type="text" list="playerList" name="player1Name" id="player1Name" placeholder="Player 1" aria-describedby="playerHelp">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-4">
+                      <div class="row">
+                        <input type="hidden" name="player1Char" id="player1Char">
+                        <a href="#player1CharSSModal" class="link-char-select" data-bs-toggle="modal">
+                          <img id="player1CharSSImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAuCAQAAAAVMFaXAAAAOElEQVR42u3OMQEAAAwCoNm/9AoYwAMSkBsXQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBweYBxOUAL6pRsVoAAAAASUVORK5CYII=">
+                        </a>
+                      </div>
+                    </div>
+                    <div class="col-8">
+                      <div class="render-skin">
+                        <img id="player1SkinRenderImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-3 mb-sm-0">
+                    <div class="col-12">
+                      <div id="player1SkinDiv"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-2">
+                  <div class="row justify-content-center">
+                    <div class="col-2 col-sm-12 mb-3">
+                      <button class="btn btn-outline-secondary" type="button" id="resetScores"><img src="assets/images/svg/undo-svgrepo-com.svg" alt="Undo SVG"></button>
+                    </div>
+                    <div class="col-2 col-sm-12 mb-3 mb-sm-0">
+                      <button class="btn btn-outline-secondary" type="button" id="swapPlayers"><img src="assets/images/svg/sync-svgrepo-com.svg" alt="Sync SVG"></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-5">
+                  <div class="row justify-content-center justify-content-sm-start mb-3">
+                    <div class="col-3 col-sm-4">
+                      <input class="form-control" type="number" min="0" step="1" name="player2Score" id="player2Score" value="0" aria-describedby="playerHelp">
+                    </div>
+                    <div class="col-3 l-check">
+                      <input class="btn-check" type="checkbox" name="player2LCheck" id="player2LCheck" autocomplete="off">
+                      <label class="btn btn-danger" for="player2LCheck">[L]</label>
+                    </div>
+                  </div>
+                  <div class="row justify-content-center justify-content-sm-start mb-3">
+                    <div class="col-12">
+                      <input type="hidden" name="player2Colour" id="player2Colour">
+                      <div class="input-group" id="player2NameGroup">
+                        <button class="btn btn-outline-secondary dropdown-toggle" id="player2ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                        <ul class="dropdown-menu" id="player2ColourList"></ul>
+                        <input class="form-control" type="text" list="playerList" name="player2Name" id="player2Name" placeholder="Player 2" aria-describedby="playerHelp">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-4 order-sm-last">
+                      <div class="row">
+                        <input type="hidden" name="player2Char" id="player2Char">
+                        <a href="#player2CharSSModal" class="link-char-select" data-bs-toggle="modal">
+                          <img id="player2CharSSImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAuCAQAAAAVMFaXAAAAOElEQVR42u3OMQEAAAwCoNm/9AoYwAMSkBsXQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBweYBxOUAL6pRsVoAAAAASUVORK5CYII=">
+                        </a>
+                      </div>
+                    </div>
+                    <div class="col-8 order-sm-first">
+                      <div class="render-skin">
+                        <img id="player2SkinRenderImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-3 mb-sm-0">
+                    <div class="col-12">
+                      <div id="player2SkinDiv"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-3" id="commentatorCard">
+            <div class="card-header">
+              <span id="commentatorHeader">
+                <img src="assets/images/svg/headset-svgrepo-com.svg" alt="Headset SVG" class="card-icon">
+                  Commentators
+                <span id="commentatorHelp" class="form-text">
+                  Enter commentator names
+                </span>
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12 col-sm-5 mb-3 mb-sm-0">
+                  <input class="form-control" type="text" list="playerList" name="commentator1Name" id="commentator1Name" placeholder="Commentator 1" aria-describedby="commentatorHelp">
+                </div>
+                <div class="col-12 col-sm-2 mb-3 mb-sm-0">
+                  <button class="btn btn-outline-secondary" type="button" id="swapCommentators"><img src="assets/images/svg/sync-svgrepo-com.svg" alt="Sync SVG"></button>
+                </div>
+                <div class="col-12 col-sm-5">
+                  <input class="form-control" type="text" list="playerList" name="commentator2Name" id="commentator2Name" placeholder="Commentator 2" aria-describedby="commentatorHelp">
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+
+      <footer class="footer fixed-bottom">
+        <div class="d-grid">
+          <button type="submit" id="submitForm" class="btn btn-success">Submit</button>
+        </div>
+      </footer>
+    </form>
+
+    <datalist id="playerList">
+    </datalist>
+
+    <div class="modal fade modal-char-ss" id="player1CharSSModal" tabindex="-1" aria-labelledby="player1CharSSModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content" data-bs-dismiss="modal">
+          <div class="modal-body">
+            <div id="player1CharSS"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade modal-char-ss" id="player2CharSSModal" tabindex="-1" aria-labelledby="player2CharSSModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content" data-bs-dismiss="modal">
+          <div class="modal-body">
+            <div id="player2CharSS"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div class="toast align-items-center text-bg-success border-0" id="saveInfoSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Info successfully saved!
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="toast align-items-center text-bg-danger border-0" id="saveInfoFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Failed to save info!
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+    <script src="assets/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"></script>
+    <script src="assets/js/mousetrap.min.js" integrity="sha384-ua6PqP0suS84Rz8RHj5WivrFuM5x4mztE5J+cD0inKGylVb8iol6np9bU4rgafRS"></script>
+    <script src="assets/js/index.js"></script>
+  </body>
+</html>
