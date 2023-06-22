@@ -40,10 +40,9 @@ app.whenReady().then(() => {
   // Load settings if app has been previously run
   // Else, let user set settings and save into settings.json
   try {
-    settings = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), 'settings.json'), 'utf-8'));
+    settings = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), 'settings.json'), 'utf-8'));
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.log(path.join(app.getPath("userData"), 'settings.json'));
       dialog.showMessageBoxSync({ message: 'Hello!\nBefore using this app, please start by initializing your settings', type: 'info', icon: path.join(ICON_PATH, 'RCS.png'), detail: 'SETTINGS_NOT_FOUND' });
 
       dialog.showMessageBoxSync({ message: 'First, please select the directory where assets can be retrieved from', type: 'info', icon: path.join(ICON_PATH, 'RCS.png'), detail: 'SET_ASSETS_PATH' });
@@ -61,7 +60,7 @@ app.whenReady().then(() => {
         'path.output': output_path
       }
 
-      fs.writeFileSync(path.join(app.getPath("userData"), 'settings.json'), JSON.stringify(settings), 'utf-8');
+      fs.writeFileSync(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(settings), 'utf-8');
       dialog.showMessageBoxSync({ message: 'Settings have been saved successfully', type: 'info', icon: path.join(ICON_PATH, 'RCS.png'), detail: 'SETTINGS_SAVED' });
     } else {
       throw err;
@@ -114,12 +113,12 @@ app.whenReady().then(() => {
     return settings;
   });
   ipcMain.handle('fetch:player-obj', () => {
-    return fs.promises.readFile(path.join(app.getPath("userData"), 'players.json'), 'utf-8')
+    return fs.promises.readFile(path.join(app.getPath('userData'), 'players.json'), 'utf-8')
             .then((result) => { return JSON.parse(result) })
             .catch(() => { return {} });
   });
   ipcMain.handle('save:settings-obj', (_, obj) => {
-    return fs.promises.writeFile(path.join(app.getPath("userData"), 'settings.json'), JSON.stringify(obj), 'utf-8')
+    return fs.promises.writeFile(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(obj), 'utf-8')
             .then(() => {
               settings = obj;
               return true;
@@ -127,7 +126,7 @@ app.whenReady().then(() => {
             .catch(() => { return false });
   });
   ipcMain.handle('save:player-obj', (_, obj) => {
-    return fs.promises.writeFile(path.join(app.getPath("userData"), 'players.json'), JSON.stringify(obj), 'utf-8')
+    return fs.promises.writeFile(path.join(app.getPath('userData'), 'players.json'), JSON.stringify(obj), 'utf-8')
             .then(() => { return true })
             .catch(() => { return false });
   });
