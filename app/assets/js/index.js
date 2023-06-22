@@ -48,20 +48,6 @@ let playerObj = {};
 // Initialize functions
 
 const adjustRoundDiv = async (round) => {
-  if (round.includes('Round')) {
-    document.getElementById('roundNumDiv').style.display = 'block';
-    document.getElementById('roundDiv').classList.add('col-sm-8');
-    document.getElementById('roundDiv').classList.add('mb-1');
-    document.getElementById('roundDiv').classList.remove('col-sm-12');
-    document.getElementById('roundDiv').classList.remove('mb-3');
-  } else {
-    document.getElementById('roundNumDiv').style.display = 'none';
-    document.getElementById('roundDiv').classList.add('col-sm-12');
-    document.getElementById('roundDiv').classList.add('mb-3');
-    document.getElementById('roundDiv').classList.remove('col-sm-8');
-    document.getElementById('roundDiv').classList.remove('mb-1');
-  }
-
   if (round === 'Grand Finals') {
     let lCheckDivs = document.getElementsByClassName('l-check');
     for (let i = 0; i < lCheckDivs.length; i++) {
@@ -479,6 +465,7 @@ document.getElementById('bracketForm').addEventListener('submit', (event) => {
   event.preventDefault();
   const formData = new FormData(event.target);
   const serializedInfo = Object.fromEntries(formData.entries());
+  serializedInfo['bestOf'] = serializedInfo['bestOf'] + ' ' + serializedInfo['bestOfNum'];
   serializedInfo['player1LCheck'] = !(formData.get('player1LCheck') === null);
   serializedInfo['player2LCheck'] = !(formData.get('player2LCheck') === null);
 
@@ -491,8 +478,7 @@ document.getElementById('bracketForm').addEventListener('submit', (event) => {
 Mousetrap.bind(['1'], () => { incrementP1Score() });
 Mousetrap.bind(['2'], () => { incrementP2Score() });
 Mousetrap.bind(['esc'], () => { resetScores() });
-Mousetrap.bind(['mod+1'], () => { document.getElementById('nameCard').scrollIntoView() });
-Mousetrap.bind(['mod+2'], () => { document.getElementById('bracketCard').scrollIntoView() });
-Mousetrap.bind(['mod+3'], () => { document.getElementById('playerCard').scrollIntoView() });
-Mousetrap.bind(['mod+4'], () => { document.getElementById('commentatorCard').scrollIntoView() });
+Mousetrap.bind(['mod+1'], () => { document.getElementById('detailsCard').scrollIntoView() });
+Mousetrap.bind(['mod+2'], () => { document.getElementById('playerCard').scrollIntoView() });
+Mousetrap.bind(['mod+3'], () => { document.getElementById('commentatorCard').scrollIntoView() });
 Mousetrap.bind(['enter'], () => { if (document.activeElement.tagName === 'BODY') document.getElementById('submitForm').click(); });

@@ -15,93 +15,37 @@
   <body>
     <form id="bracketForm">
       <div class="container-fluid text-center pb-5">
-          <div class="card mt-3 mb-3" id="tournamentNameCard">
+          <div class="card mt-3 mb-3" id="detailsCard">
             <div class="card-header">
-              <span id="tournamentNameHeader">
+              <span id="detailsHeader">
                 <img src="assets/images/svg/trophy-svgrepo-com.svg" alt="Trophy SVG" class="card-icon">
-                  Name
-                <span id="tournamentNameHelp" class="form-text">
-                  Enter the tournament's name
-                </span>
-              </span>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <input class="form-control" type="text" name="tournamentName" id="tournamentName" placeholder="Name" aria-describedby="tournamentNameHelp">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card mt-3 mb-3" id="bracketCard">
-            <div class="card-header">
-              <span id="bracketHeader">
-                <img src="assets/images/svg/tournament-svgrepo-com.svg" alt="Tournament SVG" class="card-icon">
-                  Bracket
-                <span id="bracketHelp" class="form-text">
-                  Select the bracket type and round
+                  Details
+                <span id="detailsHelp" class="form-text">
+                  Enter tournament, event and set details
                 </span>
               </span>
             </div>
             <div class="card-body">
               <div class="row mb-3">
-                <div class="col">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="bracketType" id="singlesRadio" value="Singles" checked>
-                    <label class="form-check-label" for="singlesRadio">Singles</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="bracketType" id="doublesRadio" value="Doubles" disabled>
-                    <label class="form-check-label" for="doublesRadio">Doubles</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="bracketType" id="squadsRadio" value="Squad Strike" disabled>
-                    <label class="form-check-label" for="squadsRadio">Squad Strike</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="bracketType" id="crewsRadio" value="Crews" disabled>
-                    <label class="form-check-label" for="crewsRadio">Crews</label>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-12 col-sm-8">
-                  <div class="row">
-                    <div class="col-12 col-sm-8 mb-1 mb-sm-0" id="roundDiv">
-                      <select class="form-select" name="round" id="round" aria-label="Round select">
-                        <option selected>Winners Round</option>
-                        <option>Winners Quarter Finals</option>
-                        <option>Winners Semi Finals</option>
-                        <option>Winners Finals</option>
-                        <option>Losers Round</option>
-                        <option>Losers Quarter Finals</option>
-                        <option>Losers Semi Finals</option>
-                        <option>Losers Finals</option>
-                        <option>Grand Finals</option>
-                        <option>Pools</option>
-                        <option>Friendlies</option>
-                        <option>Money Match</option>
-                      </select>
-                    </div>
-                    <div class="col-12 col-sm-4 mb-3 mb-sm-0" id="roundNumDiv">
-                      <input class="form-control" type="number" min="1" step="1" name="roundNum" id="roundNum" value="1" aria-describedby="bracketHelp">
-                    </div>
-                  </div>
+                <div class="col-12 col-sm-8 mb-3 mb-sm-0">
+                  <input class="form-control" type="text" name="tournamentName" id="tournamentName" placeholder="Tournament Name" aria-describedby="detailsHelp">
                 </div>
                 <div class="col-12 col-sm-4">
-                  <select class="form-select" name="bestOf" id="bestOf" aria-label="Best of select">
-                    <option selected>Best of 3</option>
-                    <option>Best of 5</option>
-                    <option>First to 5</option>
-                    <option>First to 10</option>
+                  <input class="form-control" type="text" name="eventName" id="eventName" placeholder="Event Name" aria-describedby="detailsHelp">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12 col-sm-8 mb-3 mb-sm-0">
+                  <input class="form-control" type="text" name="round" id="round" placeholder="Round" aria-describedby="detailsHelp">
+                </div>
+                <div class="col-6 col-sm-2">
+                  <select class="form-select" name="bestOf" id="bestOf" aria-label="Best of select" aria-describedby="detailsHelp">
+                    <option selected>Best of</option>
+                    <option>First to</option>
                   </select>
+                </div>
+                <div class="col-6 col-sm-2">
+                  <input class="form-control" type="number" min="1" step="1" name="bestOfNum" id="bestOfNum" value="3" aria-describedby="detailsHelp">
                 </div>
               </div>
             </div>
