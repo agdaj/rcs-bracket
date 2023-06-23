@@ -914,6 +914,9 @@ document.getElementById('tournamentForm').addEventListener('submit', (event) => 
 
   event.target.querySelector('button[type="submit"]').disabled = true;
 
+  document.getElementById('setPhases').innerHTML = '';
+  document.getElementById('setPhaseGroup').innerHTML = '';
+
   const formData = new FormData(event.target);
   const serializedInfo = Object.fromEntries(formData.entries());
   if (!serializedInfo['tournamentURL'].startsWith('https://www.start.gg/tournament/')) {
@@ -931,7 +934,11 @@ document.getElementById('tournamentForm').addEventListener('submit', (event) => 
   event.target.querySelector('button[type="submit"]').disabled = false;
 });
 
-document.getElementById('event').addEventListener('change', (event) => {
+document.getElementById('refreshEvents').addEventListener('click', () => {
+  document.getElementById('findFormBtn').click();
+});
+
+document.getElementById('event').addEventListener('change', () => {
   document.getElementById('fetchFormBtn').click();
 });
 
@@ -970,7 +977,7 @@ document.getElementById('player2Name').addEventListener('input', (event) => {
   }
 });
 
-document.getElementById('resetScores').addEventListener('click', (event) => {
+document.getElementById('resetScores').addEventListener('click', () => {
   resetScores();
 });
 

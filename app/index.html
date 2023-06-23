@@ -33,7 +33,7 @@
                     <input type="hidden" name="apiToken" id="apiToken" value="">
                     <div class="input-group" id="tournamentURLGroup">
                       <input class="form-control" type="text" name="tournamentURL" id="tournamentURL" placeholder="https://www.start.gg/tournament/NAME/details" aria-describedby="tournamentURLHelp" required>
-                      <button class="btn btn-outline-secondary" type="submit">Find</button>
+                      <button type="submit" class="btn btn-outline-secondary" id="findFormBtn">Find</button>
                     </div>
                   </div>
                 </div>
@@ -53,6 +53,7 @@
                   </span>
                   <span class="spinner-border spinner-border-sm d-none" id="eventSpinner" role="status" aria-hidden="true"></span>
                 </span>
+                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="refreshEvents"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
               </div>
               <div class="card-body">
                 <div class="row">
@@ -61,7 +62,7 @@
                     <select class="form-select" name="event" id="event" aria-label="Event select">
                       <option disabled selected>Enter URL</option>
                     </select>
-                    <button type="submit" id="fetchFormBtn" class="btn btn-success d-none">Fetch</button>
+                    <button type="submit" class="btn btn-success d-none" id="fetchFormBtn">Fetch</button>
                   </div>
                 </div>
               </div>
@@ -287,7 +288,7 @@
 
         <footer class="footer fixed-bottom">
           <div class="d-grid">
-            <button type="submit" id="submitFormBtn" class="btn btn-success">Submit</button>
+            <button type="submit" class="btn btn-success" id="submitFormBtn">Submit</button>
           </div>
         </footer>
       </form>
