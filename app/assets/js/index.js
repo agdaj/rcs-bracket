@@ -78,8 +78,7 @@ const adjustRoundDiv = async (round) => {
 };
 
 const clearPlayers = async () => {
-  document.getElementById('player1Score').value = 0;
-  document.getElementById('player2Score').value = 0;
+  resetScores();
 
   document.getElementById('player1LCheck').checked = false;
   document.getElementById('player2LCheck').checked = false;
