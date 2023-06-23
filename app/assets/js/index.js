@@ -287,6 +287,22 @@ const createIdentifierLabel = (identifier) => {
 
 // Initialize functions
 
+const loadSettings = async () => {
+  let settingsObj = await window.fsAPI.fetch.settingsObj();
+
+  let apiToken = settingsObj['api.token'];
+
+  document.getElementById('apiTokenInput').value = apiToken;
+  fillAPIToken(apiToken);
+};
+
+const fillAPIToken = async (apiToken) => {
+  let apiTokenEl = document.querySelectorAll('input[name="apiToken"]');
+  for (let i = 0; i < apiTokenEl.length; i++) {
+    apiTokenEl[i].value = apiToken;
+  }
+};
+
 const populateEvents = async (slug, apiToken) => {
   document.getElementById('event').innerHTML = '';
   document.getElementById('eventSpinner').classList.remove('d-none');
@@ -306,6 +322,13 @@ const populateEvents = async (slug, apiToken) => {
 
       let name = response['data']['tournament']['name'];
       document.getElementById('tournamentName').value = name;
+
+      // Save API token on successful data retrieval
+      window.fsAPI.fetch.settingsObj()
+        .then(settingsObj => {
+          settingsObj['api.token'] = apiToken;
+          window.fsAPI.save.settingsObj(settingsObj);
+        });
 
       document.getElementById('eventSpinner').classList.add('d-none');
     })
@@ -902,6 +925,7 @@ const saveInfoObj = async (infoObj) => {
 
 // Call functions for initial rendering
 
+loadSettings();
 loadPlayer1ColourSet();
 loadPlayer2ColourSet();
 loadCharacterList();
@@ -910,10 +934,7 @@ loadPlayerObj();
 // Set listeners
 
 document.getElementById('apiTokenInput').addEventListener('input', (event) => {
-  let apiTokenEl = document.querySelectorAll('input[name="apiToken"]');
-  for (let i = 0; i < apiTokenEl.length; i++) {
-    apiTokenEl[i].value = event.target.value;
-  }
+  fillAPIToken(event.target.value);
 });
 
 document.getElementById('tournamentForm').addEventListener('submit', (event) => {

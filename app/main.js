@@ -57,7 +57,8 @@ app.whenReady().then(() => {
 
       settings = {
         'path.assets': assets_path,
-        'path.output': output_path
+        'path.output': output_path,
+        'api.token': ''
       }
 
       fs.writeFileSync(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(settings), 'utf-8');
