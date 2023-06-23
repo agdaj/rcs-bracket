@@ -1,5 +1,6 @@
 // index.js
 
+const perPage = 10;
 const colourObj = [
   {
     'name': 'Red',
@@ -43,9 +44,461 @@ const colourObj = [
   }
 ];
 
+let setIdObj = {};
 let playerObj = {};
 
+// start.gg Interfacing
+
+const queryEvents = async (slug, apiToken) => {
+  const query = `
+    query TournamentQuery($slug: String) {
+      tournament(slug: $slug) {
+        name
+        events {
+          id
+          name
+        }
+      }
+    }
+  `;
+  const variables = {'slug': slug};
+  const data = {'query': query, 'variables': variables};
+
+  return fetch('https://api.start.gg/gql/alpha', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+const querySetCount = async (eventId, apiToken) => {
+  const query = `
+    query EventSets($eventId: ID!) {
+      event(id: $eventId) {
+        name
+        sets {
+          pageInfo {
+            total
+          }
+        }
+      }
+    }
+  `;
+  const variables = {'eventId': eventId};
+  const data = {'query': query, 'variables': variables};
+
+  return fetch('https://api.start.gg/gql/alpha', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+const querySets = async (eventId, page, perPage, apiToken) => {
+  const query = `
+    query EventSets($eventId: ID!, $page: Int!, $perPage: Int!) {
+      event(id: $eventId) {
+        sets(
+          page: $page
+          perPage: $perPage
+          sortType: MAGIC
+        ) {
+          nodes {
+            id
+            fullRoundText
+            phaseGroup {
+                displayIdentifier
+                phase {
+                    name
+                }
+            }
+            identifier
+            slots {
+              entrant {
+                name
+                participants {
+                  prefix
+                  gamerTag
+                }
+              }
+              standing {
+                placement
+                stats {
+                  score {
+                    value
+                  }
+                }
+              }
+            }
+            completedAt
+          }
+        }
+      }
+    }
+  `;
+  const variables = {'eventId': eventId, 'page': page, 'perPage': perPage};
+  const data = {'query': query, 'variables': variables};
+
+  return fetch('https://api.start.gg/gql/alpha', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+const createMatch = (matchNode) => {
+  let match = document.createElement('div');
+  match.classList.add('match', 'has-identifier', 'reportable');
+  if (matchNode.completedAt === null) {
+    match.classList.add('playable');
+  }
+  match.setAttribute('data-set-id', matchNode.id);
+
+  let matchAffixWrapper = document.createElement('div');
+  matchAffixWrapper.classList.add('match-affix-wrapper');
+
+  let matchSectionTop = document.createElement('div');
+  matchSectionTop.classList.add('match-section', 'match-section-top');
+  matchSectionTop.appendChild(createMatchSectionWrapper(matchNode.slots[0]));
+
+  let matchSpacer = document.createElement('div');
+  matchSpacer.classList.add('match-spacer');
+
+  let matchSectionBottom = document.createElement('div');
+  matchSectionBottom.classList.add('match-section', 'match-section-bottom');
+  matchSectionBottom.appendChild(createMatchSectionWrapper(matchNode.slots[1]));
+
+  matchAffixWrapper.append(
+    matchSectionTop,
+    matchSpacer,
+    matchSectionBottom,
+    createIdentifierLabel(matchNode.identifier)
+  );
+  match.appendChild(matchAffixWrapper);
+  return match;
+};
+
+const createMatchSectionWrapper = (slot) => {
+  let matchPlayerName = document.createElement('div');
+  matchPlayerName.classList.add('matchSectionWrapper');
+
+  let matchPlayer = document.createElement('div');
+  matchPlayer.classList.add('match-player', 'entrant');
+
+  matchPlayer.appendChild(createMatchPlayerName(slot.entrant));
+  if (slot.standing !== null) {
+    matchPlayer.appendChild(createMatchPlayerInfo(slot.standing));
+
+    if (slot.standing.stats.score.value !== null) {
+      if (slot.standing.placement === 1) {
+        matchPlayer.classList.add('winner');
+      } else {
+        matchPlayer.classList.add('loser');
+      }
+    }
+  }
+  return matchPlayer;
+}
+
+const createMatchPlayerName = (entrant) => {
+  let matchPlayerName = document.createElement('div');
+  matchPlayerName.classList.add('match-player-name');
+
+  let flexItemGrower = document.createElement('div');
+  flexItemGrower.classList.add('flex-item-grower', 'text-ellipsis');
+
+  let nameSpan = document.createElement('span');
+  let nameContainerSpan = document.createElement('span');
+  nameContainerSpan.classList.add('match-player-name-container');
+  nameSpan.appendChild(nameContainerSpan);
+
+  if (entrant.participants.length > 1) {
+    let nameNode = document.createTextNode(entrant.name);
+    nameContainerSpan.appendChild(nameNode);
+  } else {
+    if (entrant.participants[0].prefix !== null && entrant.participants[0].prefix !== '') {
+      let prefixSpan = document.createElement('span');
+      prefixSpan.classList.add('prefix', 'text-muted');
+      prefixSpan.innerText = entrant.participants[0].prefix + ' ';
+
+      nameContainerSpan.appendChild(prefixSpan);
+    }
+
+    let nameNode = document.createTextNode(entrant.participants[0].gamerTag);
+    nameContainerSpan.appendChild(nameNode);
+  }
+
+  flexItemGrower.appendChild(nameSpan);
+  matchPlayerName.appendChild(flexItemGrower);
+  return matchPlayerName;
+};
+
+const createMatchPlayerInfo = (standing) => {
+  let matchPlayerInfo = document.createElement('div');
+  matchPlayerInfo.classList.add('match-player-info');
+
+  if (standing.stats.score.value === -1) {
+    matchPlayerInfo.classList.add('status-bar');
+
+    let textDQ = document.createElement('div');
+    textDQ.classList.add('text-dq');
+    textDQ.innerText = 'DQ';
+
+    matchPlayerInfo.appendChild(textDQ);
+  } else if (standing.stats.score.value === 0 && standing.placement === 1) {
+    matchPlayerInfo.classList.add('status-bar');
+
+    let checkSVG = document.createElement('img');
+    checkSVG.setAttribute('src', 'assets/images/svg/check.svg');
+    checkSVG.classList.add('text-success');
+
+    matchPlayerInfo.appendChild(checkSVG);
+  } else if (standing.stats.score.value !== null) {
+    let matchPlayerStocks = document.createElement('div');
+    matchPlayerStocks.classList.add('match-player-stocks');
+    matchPlayerStocks.innerText = standing.stats.score.value;
+
+    matchPlayerInfo.appendChild(matchPlayerStocks);
+  }
+  return matchPlayerInfo;
+};
+
+const createIdentifierLabel = (identifier) => {
+  let identifierLabel = document.createElement('span');
+  identifierLabel.classList.add('label', 'label-default', 'match-label');
+
+  let identifierContainer = document.createElement('span');
+  identifierContainer.classList.add('identifier-container');
+  identifierContainer.innerText = identifier;
+
+  let caretRightSVG = document.createElement('img');
+  caretRightSVG.setAttribute('src', 'assets/images/svg/caret-right-fill.svg');
+  caretRightSVG.classList.add('caret-right');
+
+  identifierLabel.append(identifierContainer, caretRightSVG);
+  return identifierLabel;
+};
+
 // Initialize functions
+
+const populateEvents = async (slug, apiToken) => {
+  document.getElementById('event').innerHTML = '';
+  document.getElementById('eventSpinner').classList.remove('d-none');
+
+  queryEvents(slug, apiToken)
+    .then(response => response.json())
+    .then(response => {
+      let events = response['data']['tournament']['events'];
+      let defaultOption = new Option('Select event');
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      document.getElementById('event').add(defaultOption, undefined);
+      for (let i = 0; i < events.length; i++) {
+        let eventOption = new Option(events[i].name, events[i].id);
+        document.getElementById('event').add(eventOption, undefined);
+      }
+
+      let name = response['data']['tournament']['name'];
+      document.getElementById('tournamentName').value = name;
+
+      document.getElementById('eventSpinner').classList.add('d-none');
+    })
+    .catch(err => {
+      console.log(err);
+      const toast = new bootstrap.Toast(document.getElementById('findEventsFailToast'));
+      toast.show();
+
+      let defaultOption = new Option('Enter URL');
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      document.getElementById('event').add(defaultOption, undefined);
+
+      document.getElementById('eventSpinner').classList.add('d-none');
+    })
+};
+
+const populateSets = async (eventId, apiToken) => {
+  setIdObj = {};
+  document.getElementById('setPhases').innerHTML = '';
+  document.getElementById('setPhaseGroup').innerHTML = '';
+  document.getElementById('setSpinner').classList.remove('d-none');
+
+  querySetCount(eventId, apiToken)
+    .then(response => response.json())
+    .then(response => {
+      let setQueries = [];
+
+      let page = 1;
+      let setCount = 0;
+      let setTotal = response['data']['event']['sets']['pageInfo']['total'];
+      while (setCount < setTotal) {
+        setQueries.push(querySets(eventId, page, perPage, apiToken));
+
+        page += 1;
+        setCount += perPage;
+      }
+
+      let name = response['data']['event']['name'];
+      document.getElementById('eventName').value = name;
+
+      return Promise.all(setQueries);
+    })
+    .then(responses => Promise.all(responses.map(response => response.json())))
+    .then(responses => {
+      let setObj = {};
+      responses.forEach(response => {
+        response['data']['event']['sets']['nodes'].forEach(node => {
+          // Preprocess node
+          node['phaseGroup']['displayIdentifier'] = 'Pool ' + node['phaseGroup']['displayIdentifier'];
+
+          let phaseName = node['phaseGroup']['phase']['name'];
+          let phaseGroupName = node['phaseGroup']['displayIdentifier'];
+          let identifier = node['identifier'];
+          phaseName in setObj || (setObj[phaseName] = {});
+          phaseGroupName in setObj[phaseName] || (setObj[phaseName][phaseGroupName] = {});
+
+          setObj[phaseName][phaseGroupName][identifier] = node;
+
+          let setId = node['id'];
+          setIdObj[setId] = node;
+        })
+      })
+
+      let setCount = 0;
+      let setActive = false;
+      Object.entries(setObj).forEach(([phase, phaseGroups]) => {
+        Object.entries(phaseGroups).sort((a, b) => a[0].localeCompare(b[0], 'en', { numeric: true })).forEach(([phaseGroup, sets]) => {
+          let phaseText = phase + ' - ' + phaseGroup;
+          let navId = 'phase-nav-' + setCount;
+          let contentId = 'phase-content-' + setCount;
+
+          let phaseNav = document.createElement("li");
+          phaseNav.classList.add("nav-item");
+          phaseNav.setAttribute('role', 'presentation');
+
+          let phaseLink = document.createElement("a");
+          phaseLink.classList.add('nav-link');
+          phaseLink.setAttribute('id', navId);
+          phaseLink.setAttribute('data-bs-toggle', 'pill');
+          phaseLink.setAttribute('data-bs-target', '#' + contentId);
+          phaseLink.setAttribute('type', 'button');
+          phaseLink.setAttribute('role', 'tab');
+          phaseLink.setAttribute('aria-controls', contentId);
+          phaseLink.setAttribute('aria-selected', 'false');
+          phaseLink.text = phaseText;
+          if (!setActive) {
+            phaseLink.classList.add('active');
+            phaseLink.setAttribute('aria-selected', 'true');
+          }
+          phaseNav.appendChild(phaseLink);
+
+          let phaseContent = document.createElement('div');
+          phaseContent.classList.add('tab-pane', 'fade');
+          phaseContent.setAttribute('id', contentId);
+          phaseContent.setAttribute('role', 'tabpanel');
+          phaseContent.setAttribute('aria-labelledby', navId);
+          phaseContent.setAttribute('tab-index', '0');
+          if (!setActive) {
+            phaseContent.classList.add('show', 'active');
+            phaseContent.setAttribute('aria-selected', 'true');
+          }
+
+          let setRowContent = document.createElement('div');
+          setRowContent.classList.add('row', 'flex-nowrap', 'overflow-auto', 'bracket-phase');
+          Object.entries(sets).forEach(([_, setNode]) => {
+            if (setNode.slots[0].entrant === null || setNode.slots[1].entrant === null) {
+              return;
+            }
+
+            let setContent = document.createElement('div');
+            setContent.classList.add('col', 'bracket-public');
+
+            let roundHeader = document.createElement('div');
+            roundHeader.classList.add('round-header');
+            let roundRoot = document.createElement('div');
+            roundRoot.classList.add('round-root');
+            let roundDiv = document.createElement('div');
+            let roundTitleContainer = document.createElement('div');
+            roundTitleContainer.classList.add('round-title-container');
+            let roundTitle = document.createElement('div');
+            roundTitle.classList.add('round-title');
+            roundTitle.innerText = setNode['fullRoundText'];
+
+            roundTitleContainer.appendChild(roundTitle);
+            roundDiv.appendChild(roundTitleContainer);
+            roundRoot.appendChild(roundDiv);
+            roundHeader.appendChild(roundRoot);
+            setContent.appendChild(roundHeader);
+
+            let matchNode = createMatch(setNode);
+            matchNode.addEventListener('click', (event) => {
+              let setId = event.currentTarget.getAttribute('data-set-id');
+              fillMatchInfo(setIdObj[setId]);
+            });
+            setContent.appendChild(matchNode);
+
+            setRowContent.appendChild(setContent);
+          });
+          phaseContent.appendChild(setRowContent);
+
+          document.getElementById('setPhases').appendChild(phaseNav);
+          document.getElementById('setPhaseGroup').appendChild(phaseContent);
+          setCount += 1;
+
+          if (!setActive) {
+            setActive = true;
+          }
+        });
+      });
+      document.getElementById('setSpinner').classList.add('d-none');
+    })
+    .catch(err => {
+      console.log(err);
+      const toast = new bootstrap.Toast(document.getElementById('findSetsFailToast'));
+      toast.show();
+
+      document.getElementById('setSpinner').classList.add('d-none');
+    })
+};
+
+const fillMatchInfo = async (matchNode) => {
+  let player1Name = matchNode.slots[0]['entrant']['name'];
+  let player2Name = matchNode.slots[1]['entrant']['name'];
+  let round = matchNode['fullRoundText'];
+
+  document.getElementById('player1Name').value = player1Name;
+  document.getElementById('player2Name').value = player2Name;
+  document.getElementById('round').value = round;
+
+  if (round === 'Grand Final' || round === 'Grand Final Reset') {
+    if (round === 'Grand Final') {
+      document.getElementById('player1LCheck').checked = false;
+      document.getElementById('player2LCheck').checked = true;
+    }
+    if (round === 'Grand Final Reset') {
+      document.getElementById('player1LCheck').checked = true;
+      document.getElementById('player2LCheck').checked = true;
+    }
+    let lCheckDivs = document.getElementsByClassName('l-check');
+    for (let i = 0; i < lCheckDivs.length; i++) {
+      lCheckDivs[i].style.display = 'block';
+    }
+  } else {
+    let lCheckDivs = document.getElementsByClassName('l-check');
+    for (let i = 0; i < lCheckDivs.length; i++) {
+      lCheckDivs[i].firstElementChild.checked = false;
+      lCheckDivs[i].style.display = 'none';
+    }
+  }
+
+  resetScores();
+};
 
 const clearDetails = async () => {
   document.getElementById('tournamentName').value = '';
@@ -59,21 +512,6 @@ const clearDetails = async () => {
   for (let i = 0; i < lCheckDivs.length; i++) {
     lCheckDivs[i].firstElementChild.checked = false;
     lCheckDivs[i].style.display = 'none';
-  }
-};
-
-const adjustRoundDiv = async (round) => {
-  if (round === 'Grand Finals') {
-    let lCheckDivs = document.getElementsByClassName('l-check');
-    for (let i = 0; i < lCheckDivs.length; i++) {
-      lCheckDivs[i].style.display = 'block';
-    }
-  } else {
-    let lCheckDivs = document.getElementsByClassName('l-check');
-    for (let i = 0; i < lCheckDivs.length; i++) {
-      lCheckDivs[i].firstElementChild.checked = false;
-      lCheckDivs[i].style.display = 'none';
-    }
   }
 };
 
@@ -463,12 +901,49 @@ loadPlayerObj();
 
 // Set listeners
 
-document.getElementById('clearDetails').addEventListener('click', () => {
-  clearDetails();
+document.getElementById('tournamentForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  event.target.querySelector('button[type="submit"]').disabled = true;
+
+  const formData = new FormData(event.target);
+  const serializedInfo = Object.fromEntries(formData.entries());
+  if (!serializedInfo['tournamentURL'].startsWith('https://www.start.gg/tournament/')) {
+    const toast = new bootstrap.Toast(document.getElementById('parseURLFailToast'));
+    toast.show();
+
+    event.target.querySelector('button[type="submit"]').disabled = false;
+    return;
+  }
+  const url = new URL(serializedInfo['tournamentURL']);
+  const slug = url.pathname.split('/')[2];
+  const apiToken = serializedInfo['apiToken'];
+
+  populateEvents(slug, apiToken);
+  event.target.querySelector('button[type="submit"]').disabled = false;
 });
 
-document.getElementById('round').addEventListener('change', (event) => {
-  adjustRoundDiv(event.target.value);
+document.getElementById('event').addEventListener('change', (event) => {
+  document.getElementById('fetchFormBtn').click();
+});
+
+document.getElementById('eventForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(event.target);
+  const serializedInfo = Object.fromEntries(formData.entries());
+  const eventId = serializedInfo['event'];
+  const apiToken = serializedInfo['apiToken'];
+
+  populateSets(eventId, apiToken);
+});
+
+document.getElementById('refreshSets').addEventListener('click', () => {
+  document.getElementById('fetchFormBtn').click();
+});
+
+document.getElementById('clearDetails').addEventListener('click', () => {
+  clearDetails();
 });
 
 document.getElementById('clearPlayers').addEventListener('click', () => {
@@ -520,7 +995,10 @@ document.getElementById('bracketForm').addEventListener('submit', (event) => {
 Mousetrap.bind(['1'], () => { incrementP1Score() });
 Mousetrap.bind(['2'], () => { incrementP2Score() });
 Mousetrap.bind(['esc'], () => { resetScores() });
-Mousetrap.bind(['mod+1'], () => { document.getElementById('detailsCard').scrollIntoView() });
-Mousetrap.bind(['mod+2'], () => { document.getElementById('playerCard').scrollIntoView() });
-Mousetrap.bind(['mod+3'], () => { document.getElementById('commentatorCard').scrollIntoView() });
-Mousetrap.bind(['enter'], () => { if (document.activeElement.tagName === 'BODY') document.getElementById('submitForm').click(); });
+Mousetrap.bind(['mod+1'], () => { document.getElementById('tournamentURLCard').scrollIntoView() });
+Mousetrap.bind(['mod+2'], () => { document.getElementById('eventCard').scrollIntoView() });
+Mousetrap.bind(['mod+3'], () => { document.getElementById('setsCard').scrollIntoView() });
+Mousetrap.bind(['mod+4'], () => { document.getElementById('detailsCard').scrollIntoView() });
+Mousetrap.bind(['mod+5'], () => { document.getElementById('playerCard').scrollIntoView() });
+Mousetrap.bind(['mod+6'], () => { document.getElementById('commentatorCard').scrollIntoView() });
+Mousetrap.bind(['enter'], () => { if (document.activeElement.tagName === 'BODY') document.getElementById('submitFormBtn').click(); });

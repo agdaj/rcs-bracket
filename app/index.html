@@ -6,194 +6,292 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data:">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src https://api.start.gg; img-src 'self' data:">
     <title>RCS Bracket Manager</title>
 
     <link href="assets/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT">
     <link href="assets/css/index.css" rel="stylesheet">
   </head>
   <body>
-    <form id="bracketForm">
-      <div class="container-fluid text-center pb-5">
-          <div class="card mt-3 mb-3" id="detailsCard">
-            <div class="card-header">
-              <span id="detailsHeader">
-                <img src="assets/images/svg/trophy.svg" alt="Trophy SVG" class="card-icon">
-                  Details
-                <span id="detailsHelp" class="form-text">
-                  Enter tournament, event and set details
+    <div class="container-fluid pb-5">
+      <div class="row">
+        <div class="col-12 col-sm-8">
+          <form id="tournamentForm">
+            <div class="card mt-3 mb-3" id="tournamentURLCard">
+              <div class="card-header text-center">
+                <span id="tournamentURLHeader">
+                  <img src="assets/images/svg/link.svg" alt="Link SVG" class="card-icon">
+                    Tournament
+                  <span class="form-text" id="tournamentURLHelp">
+                    Enter start.gg tournament URL
+                  </span>
                 </span>
-              </span>
-              <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearDetails"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
-            </div>
-            <div class="card-body">
-              <div class="row mb-3">
-                <div class="col-12 col-sm-8 mb-3 mb-sm-0">
-                  <input class="form-control" type="text" name="tournamentName" id="tournamentName" placeholder="Tournament Name" aria-describedby="detailsHelp">
-                </div>
-                <div class="col-12 col-sm-4">
-                  <input class="form-control" type="text" name="eventName" id="eventName" placeholder="Event Name" aria-describedby="detailsHelp">
-                </div>
               </div>
-              <div class="row mb-3">
-                <div class="col-12 col-sm-8 mb-3 mb-sm-0">
-                  <input class="form-control" type="text" name="round" id="round" placeholder="Round" aria-describedby="detailsHelp">
-                </div>
-                <div class="col-6 col-sm-2">
-                  <select class="form-select" name="bestOf" id="bestOf" aria-label="Best of select" aria-describedby="detailsHelp">
-                    <option selected>Best of</option>
-                    <option>First to</option>
-                  </select>
-                </div>
-                <div class="col-6 col-sm-2">
-                  <input class="form-control" type="number" min="1" step="1" name="bestOfNum" id="bestOfNum" value="3" aria-describedby="detailsHelp">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <input type="hidden" name="apiToken" id="apiToken" value="">
+                    <div class="input-group" id="tournamentURLGroup">
+                      <input class="form-control" type="text" name="tournamentURL" id="tournamentURL" placeholder="https://www.start.gg/tournament/NAME/details" aria-describedby="tournamentURLHelp" required>
+                      <button class="btn btn-outline-secondary" type="submit">Find</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="card mt-3 mb-3" id="playerCard">
-            <div class="card-header">
-              <span id="playerHeader">
-                <img src="assets/images/svg/people.svg" alt="People SVG" class="card-icon">
-                  Players
-                <span id="playerHelp" class="form-text">
-                  Enter player details, score and characters
+          </form>
+        </div>
+        <div class="col-12 col-sm-4">
+          <form id="eventForm">
+            <div class="card mt-0 mb-3 mt-sm-3" id="eventCard">
+              <div class="card-header text-center">
+                <span id="eventHeader">
+                  <img src="assets/images/svg/controller.svg" alt="Controller SVG" class="card-icon">
+                    Event
+                  <span class="form-text" id="eventHelp">
+                    Select tournament event
+                  </span>
+                  <span class="spinner-border spinner-border-sm d-none" id="eventSpinner" role="status" aria-hidden="true"></span>
                 </span>
-              </span>
-              <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearPlayers"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
-            </div>
-            <div class="card-body">
-              <div class="row mb-3">
-                <div class="col-12 col-sm-5">
-                  <div class="row justify-content-center justify-content-sm-end mb-3">
-                    <div class="col-3 col-sm-4 order-sm-last">
-                      <input class="form-control" type="number" min="0" step="1" name="player1Score" id="player1Score" value="0" aria-describedby="playerHelp">
-                    </div>
-                    <div class="col-3 order-sm-first l-check">
-                      <input class="btn-check" type="checkbox" name="player1LCheck" id="player1LCheck" autocomplete="off">
-                      <label class="btn btn-danger" for="player1LCheck">[L]</label>
-                    </div>
-                  </div>
-                  <div class="row justify-content-center justify-content-sm-end mb-3">
-                    <div class="col-12">
-                      <input type="hidden" name="player1Colour" id="player1Colour">
-                      <div class="input-group" id="player1NameGroup">
-                        <button class="btn btn-outline-secondary dropdown-toggle" id="player1ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
-                        <ul class="dropdown-menu" id="player1ColourList"></ul>
-                        <input class="form-control" type="text" list="playerList" name="player1Name" id="player1Name" placeholder="Player 1" aria-describedby="playerHelp">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-4">
-                      <div class="row">
-                        <input type="hidden" name="player1Char" id="player1Char">
-                        <a href="#player1CharSSModal" class="link-char-select" data-bs-toggle="modal">
-                          <img id="player1CharSSImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAuCAQAAAAVMFaXAAAAOElEQVR42u3OMQEAAAwCoNm/9AoYwAMSkBsXQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBweYBxOUAL6pRsVoAAAAASUVORK5CYII=">
-                        </a>
-                      </div>
-                    </div>
-                    <div class="col-8">
-                      <div class="render-skin">
-                        <img id="player1SkinRenderImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-3 mb-sm-0">
-                    <div class="col-12">
-                      <div id="player1SkinDiv"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-2">
-                  <div class="row justify-content-center">
-                    <div class="col-2 col-sm-12 mb-3">
-                      <button class="btn btn-outline-secondary" type="button" id="resetScores"><img src="assets/images/svg/arrow-counterclockwise.svg" alt="Reset SVG"></button>
-                    </div>
-                    <div class="col-2 col-sm-12 mb-3 mb-sm-0">
-                      <button class="btn btn-outline-secondary" type="button" id="swapPlayers"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-5">
-                  <div class="row justify-content-center justify-content-sm-start mb-3">
-                    <div class="col-3 col-sm-4">
-                      <input class="form-control" type="number" min="0" step="1" name="player2Score" id="player2Score" value="0" aria-describedby="playerHelp">
-                    </div>
-                    <div class="col-3 l-check">
-                      <input class="btn-check" type="checkbox" name="player2LCheck" id="player2LCheck" autocomplete="off">
-                      <label class="btn btn-danger" for="player2LCheck">[L]</label>
-                    </div>
-                  </div>
-                  <div class="row justify-content-center justify-content-sm-start mb-3">
-                    <div class="col-12">
-                      <input type="hidden" name="player2Colour" id="player2Colour">
-                      <div class="input-group" id="player2NameGroup">
-                        <button class="btn btn-outline-secondary dropdown-toggle" id="player2ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
-                        <ul class="dropdown-menu" id="player2ColourList"></ul>
-                        <input class="form-control" type="text" list="playerList" name="player2Name" id="player2Name" placeholder="Player 2" aria-describedby="playerHelp">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-4 order-sm-last">
-                      <div class="row">
-                        <input type="hidden" name="player2Char" id="player2Char">
-                        <a href="#player2CharSSModal" class="link-char-select" data-bs-toggle="modal">
-                          <img id="player2CharSSImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAuCAQAAAAVMFaXAAAAOElEQVR42u3OMQEAAAwCoNm/9AoYwAMSkBsXQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBweYBxOUAL6pRsVoAAAAASUVORK5CYII=">
-                        </a>
-                      </div>
-                    </div>
-                    <div class="col-8 order-sm-first">
-                      <div class="render-skin">
-                        <img id="player2SkinRenderImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-3 mb-sm-0">
-                    <div class="col-12">
-                      <div id="player2SkinDiv"></div>
-                    </div>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <input type="hidden" name="apiToken" id="apiToken" value="">
+                    <select class="form-select" name="event" id="event" aria-label="Event select">
+                      <option disabled selected>Enter URL</option>
+                    </select>
+                    <button type="submit" id="fetchFormBtn" class="btn btn-success d-none">Fetch</button>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="card mt-3" id="commentatorCard">
-            <div class="card-header">
-              <span id="commentatorHeader">
-                <img src="assets/images/svg/headset.svg" alt="Headset SVG" class="card-icon">
-                  Commentators
-                <span id="commentatorHelp" class="form-text">
-                  Enter commentator names
-                </span>
-              </span>
-              <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearCommentators"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-12 col-sm-5 mb-3 mb-sm-0">
-                  <input class="form-control" type="text" list="playerList" name="commentator1Name" id="commentator1Name" placeholder="Commentator 1" aria-describedby="commentatorHelp">
-                </div>
-                <div class="col-12 col-sm-2 mb-3 mb-sm-0">
-                  <button class="btn btn-outline-secondary" type="button" id="swapCommentators"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
-                </div>
-                <div class="col-12 col-sm-5">
-                  <input class="form-control" type="text" list="playerList" name="commentator2Name" id="commentator2Name" placeholder="Commentator 2" aria-describedby="commentatorHelp">
-                </div>
-              </div>
-            </div>
-          </div>
+          </form>
+        </div>
       </div>
 
-      <footer class="footer fixed-bottom">
-        <div class="d-grid">
-          <button type="submit" id="submitForm" class="btn btn-success">Submit</button>
+      <div class="row">
+        <div class="col">
+          <form id="setsForm">
+            <div class="card mb-3" id="setsCard">
+              <div class="card-header text-center">
+                <span id="setsHeader">
+                  <img src="assets/images/svg/diagram-2.svg" alt="Bracket SVG" class="card-icon">
+                    Sets
+                  <span class="form-text" id="setsHelp">
+                    Select tournament set
+                  </span>
+                  <span class="spinner-border spinner-border-sm d-none" id="setSpinner" role="status" aria-hidden="true"></span>
+                </span>
+                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="refreshSets"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <ul class="nav nav-pills justify-content-center mb-3" id="setPhases" role="tablist">
+                    </ul>
+                    <div class="tab-content" id="setPhaseGroup">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
-      </footer>
-    </form>
+      </div>
+
+      <form id="bracketForm">
+        <div class="row">
+          <div class="col">
+            <div class="card mb-3" id="detailsCard">
+              <div class="card-header text-center">
+                <span id="detailsHeader">
+                  <img src="assets/images/svg/trophy.svg" alt="Trophy SVG" class="card-icon">
+                    Details
+                  <span id="detailsHelp" class="form-text">
+                    Enter tournament, event and set details
+                  </span>
+                </span>
+                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearDetails"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
+              </div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-12 col-sm-8 mb-3 mb-sm-0">
+                    <input class="form-control" type="text" name="tournamentName" id="tournamentName" placeholder="Tournament Name" aria-describedby="detailsHelp">
+                  </div>
+                  <div class="col-12 col-sm-4">
+                    <input class="form-control" type="text" name="eventName" id="eventName" placeholder="Event Name" aria-describedby="detailsHelp">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-12 col-sm-8 mb-3 mb-sm-0">
+                    <input class="form-control" type="text" name="round" id="round" placeholder="Round" aria-describedby="detailsHelp">
+                  </div>
+                  <div class="col-6 col-sm-2">
+                    <select class="form-select" name="bestOf" id="bestOf" aria-label="Best of select" aria-describedby="detailsHelp">
+                      <option selected>Best of</option>
+                      <option>First to</option>
+                    </select>
+                  </div>
+                  <div class="col-6 col-sm-2">
+                    <input class="form-control" type="number" min="1" step="1" name="bestOfNum" id="bestOfNum" value="3" aria-describedby="detailsHelp">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="card mb-3" id="playerCard">
+              <div class="card-header text-center">
+                <span id="playerHeader">
+                  <img src="assets/images/svg/people.svg" alt="People SVG" class="card-icon">
+                    Players
+                  <span id="playerHelp" class="form-text">
+                    Enter player details, score and characters
+                  </span>
+                </span>
+                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearPlayers"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
+              </div>
+              <div class="card-body text-center">
+                <div class="row mb-3">
+                  <div class="col-12 col-sm-5">
+                    <div class="row justify-content-center justify-content-sm-end mb-3">
+                      <div class="col-3 col-sm-4 order-sm-last">
+                        <input class="form-control" type="number" min="0" step="1" name="player1Score" id="player1Score" value="0" aria-describedby="playerHelp">
+                      </div>
+                      <div class="col-3 order-sm-first l-check">
+                        <input class="btn-check" type="checkbox" name="player1LCheck" id="player1LCheck" autocomplete="off">
+                        <label class="btn btn-danger" for="player1LCheck">[L]</label>
+                      </div>
+                    </div>
+                    <div class="row justify-content-center justify-content-sm-end mb-3">
+                      <div class="col-12">
+                        <input type="hidden" name="player1Colour" id="player1Colour">
+                        <div class="input-group" id="player1NameGroup">
+                          <button class="btn btn-outline-secondary dropdown-toggle" id="player1ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                          <ul class="dropdown-menu" id="player1ColourList"></ul>
+                          <input class="form-control" type="text" list="playerList" name="player1Name" id="player1Name" placeholder="Player 1" aria-describedby="playerHelp">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-4">
+                        <div class="row">
+                          <input type="hidden" name="player1Char" id="player1Char">
+                          <a href="#player1CharSSModal" class="link-char-select" data-bs-toggle="modal">
+                            <img id="player1CharSSImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAuCAQAAAAVMFaXAAAAOElEQVR42u3OMQEAAAwCoNm/9AoYwAMSkBsXQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBweYBxOUAL6pRsVoAAAAASUVORK5CYII=">
+                          </a>
+                        </div>
+                      </div>
+                      <div class="col-8">
+                        <div class="render-skin">
+                          <img id="player1SkinRenderImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-3 mb-sm-0">
+                      <div class="col-12">
+                        <div id="player1SkinDiv"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-2">
+                    <div class="row justify-content-center">
+                      <div class="col-2 col-sm-12 mb-3">
+                        <button class="btn btn-outline-secondary" type="button" id="resetScores"><img src="assets/images/svg/arrow-counterclockwise.svg" alt="Reset SVG"></button>
+                      </div>
+                      <div class="col-2 col-sm-12 mb-3 mb-sm-0">
+                        <button class="btn btn-outline-secondary" type="button" id="swapPlayers"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-5">
+                    <div class="row justify-content-center justify-content-sm-start mb-3">
+                      <div class="col-3 col-sm-4">
+                        <input class="form-control" type="number" min="0" step="1" name="player2Score" id="player2Score" value="0" aria-describedby="playerHelp">
+                      </div>
+                      <div class="col-3 l-check">
+                        <input class="btn-check" type="checkbox" name="player2LCheck" id="player2LCheck" autocomplete="off">
+                        <label class="btn btn-danger" for="player2LCheck">[L]</label>
+                      </div>
+                    </div>
+                    <div class="row justify-content-center justify-content-sm-start mb-3">
+                      <div class="col-12">
+                        <input type="hidden" name="player2Colour" id="player2Colour">
+                        <div class="input-group" id="player2NameGroup">
+                          <button class="btn btn-outline-secondary dropdown-toggle" id="player2ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                          <ul class="dropdown-menu" id="player2ColourList"></ul>
+                          <input class="form-control" type="text" list="playerList" name="player2Name" id="player2Name" placeholder="Player 2" aria-describedby="playerHelp">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-4 order-sm-last">
+                        <div class="row">
+                          <input type="hidden" name="player2Char" id="player2Char">
+                          <a href="#player2CharSSModal" class="link-char-select" data-bs-toggle="modal">
+                            <img id="player2CharSSImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAuCAQAAAAVMFaXAAAAOElEQVR42u3OMQEAAAwCoNm/9AoYwAMSkBsXQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBweYBxOUAL6pRsVoAAAAASUVORK5CYII=">
+                          </a>
+                        </div>
+                      </div>
+                      <div class="col-8 order-sm-first">
+                        <div class="render-skin">
+                          <img id="player2SkinRenderImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mb-3 mb-sm-0">
+                      <div class="col-12">
+                        <div id="player2SkinDiv"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="card" id="commentatorCard">
+              <div class="card-header text-center">
+                <span id="commentatorHeader">
+                  <img src="assets/images/svg/headset.svg" alt="Headset SVG" class="card-icon">
+                    Commentators
+                  <span id="commentatorHelp" class="form-text">
+                    Enter commentator names
+                  </span>
+                </span>
+                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearCommentators"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
+              </div>
+              <div class="card-body text-center">
+                <div class="row">
+                  <div class="col-12 col-sm-5 mb-3 mb-sm-0">
+                    <input class="form-control" type="text" list="playerList" name="commentator1Name" id="commentator1Name" placeholder="Commentator 1" aria-describedby="commentatorHelp">
+                  </div>
+                  <div class="col-12 col-sm-2 mb-3 mb-sm-0">
+                    <button class="btn btn-outline-secondary" type="button" id="swapCommentators"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
+                  </div>
+                  <div class="col-12 col-sm-5">
+                    <input class="form-control" type="text" list="playerList" name="commentator2Name" id="commentator2Name" placeholder="Commentator 2" aria-describedby="commentatorHelp">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="footer fixed-bottom">
+          <div class="d-grid">
+            <button type="submit" id="submitFormBtn" class="btn btn-success">Submit</button>
+          </div>
+        </footer>
+      </form>
+    </div>
 
     <datalist id="playerList">
     </datalist>
@@ -230,6 +328,30 @@
         <div class="d-flex">
           <div class="toast-body">
             Failed to save info!
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="toast align-items-center text-bg-danger border-0" id="parseURLFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            URL does not start with https://www.start.gg!
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="toast align-items-center text-bg-danger border-0" id="findEventsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Failed to find events!
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="toast align-items-center text-bg-danger border-0" id="findSetsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Failed to find sets!
           </div>
           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
