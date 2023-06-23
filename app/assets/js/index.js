@@ -47,6 +47,21 @@ let playerObj = {};
 
 // Initialize functions
 
+const clearDetails = async () => {
+  document.getElementById('tournamentName').value = '';
+  document.getElementById('eventName').value = '';
+  document.getElementById('round').value = '';
+
+  document.getElementById('bestOf').selectedIndex = 0;
+  document.getElementById('bestOfNum').value = 3;
+
+  let lCheckDivs = document.getElementsByClassName('l-check');
+  for (let i = 0; i < lCheckDivs.length; i++) {
+    lCheckDivs[i].firstElementChild.checked = false;
+    lCheckDivs[i].style.display = 'none';
+  }
+};
+
 const adjustRoundDiv = async (round) => {
   if (round === 'Grand Finals') {
     let lCheckDivs = document.getElementsByClassName('l-check');
@@ -60,6 +75,17 @@ const adjustRoundDiv = async (round) => {
       lCheckDivs[i].style.display = 'none';
     }
   }
+};
+
+const clearPlayers = async () => {
+  document.getElementById('player1Score').value = 0;
+  document.getElementById('player2Score').value = 0;
+
+  document.getElementById('player1LCheck').checked = false;
+  document.getElementById('player2LCheck').checked = false;
+
+  document.getElementById('player1Name').value = '';
+  document.getElementById('player2Name').value = '';
 };
 
 const setPlayer1Colour = async (hex) => {
@@ -376,6 +402,11 @@ const swapPlayers = async () => {
   loadPlayer2CharacterIcons(player1Char, player1Skin);
 };
 
+const clearCommentators = async () => {
+  document.getElementById('commentator1Name').value = '';
+  document.getElementById('commentator2Name').value = '';
+};
+
 const swapCommentators = async () => {
   const commentator1Name = document.getElementById('commentator1Name').value;
   const commentator2Name = document.getElementById('commentator2Name').value;
@@ -433,8 +464,16 @@ loadPlayerObj();
 
 // Set listeners
 
+document.getElementById('clearDetails').addEventListener('click', () => {
+  clearDetails();
+});
+
 document.getElementById('round').addEventListener('change', (event) => {
   adjustRoundDiv(event.target.value);
+});
+
+document.getElementById('clearPlayers').addEventListener('click', () => {
+  clearPlayers();
 });
 
 document.getElementById('player1Name').addEventListener('input', (event) => {
@@ -455,6 +494,10 @@ document.getElementById('resetScores').addEventListener('click', (event) => {
 
 document.getElementById('swapPlayers').addEventListener('click', () => {
   swapPlayers();
+});
+
+document.getElementById('clearCommentators').addEventListener('click', () => {
+  clearCommentators();
 });
 
 document.getElementById('swapCommentators').addEventListener('click', () => {
