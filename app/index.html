@@ -26,11 +26,12 @@
                     Enter start.gg tournament URL
                   </span>
                 </span>
+                <button class="btn btn-outline-secondary btn-sm float-end" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSettings" aria-controls="offcanvasSettings"><img src="assets/images/svg/key.svg" alt="Key SVG"></button>
               </div>
               <div class="card-body">
                 <div class="row">
                   <div class="col">
-                    <input type="hidden" name="apiToken" id="apiToken" value="">
+                    <input type="hidden" name="apiToken" value="">
                     <div class="input-group" id="tournamentURLGroup">
                       <input class="form-control" type="text" name="tournamentURL" id="tournamentURL" placeholder="https://www.start.gg/tournament/NAME/details" aria-describedby="tournamentURLHelp" required>
                       <button type="submit" class="btn btn-outline-secondary" id="findFormBtn">Find</button>
@@ -58,7 +59,7 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col">
-                    <input type="hidden" name="apiToken" id="apiToken" value="">
+                    <input type="hidden" name="apiToken" value="">
                     <select class="form-select" name="event" id="event" aria-label="Event select">
                       <option disabled selected>Enter URL</option>
                     </select>
@@ -355,6 +356,19 @@
             Failed to find sets!
           </div>
           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSettings" aria-labelledby="offcanvasSettingsLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasSettingsLabel">Settings</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="mb-3">
+          <label for="apiTokenInput" class="form-label">start.gg API Token</label>
+          <input type="password" class="form-control" id="apiTokenInput" placeholder="API Token">
         </div>
       </div>
     </div>

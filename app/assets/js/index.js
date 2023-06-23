@@ -909,6 +909,13 @@ loadPlayerObj();
 
 // Set listeners
 
+document.getElementById('apiTokenInput').addEventListener('input', (event) => {
+  let apiTokenEl = document.querySelectorAll('input[name="apiToken"]');
+  for (let i = 0; i < apiTokenEl.length; i++) {
+    apiTokenEl[i].value = event.target.value;
+  }
+});
+
 document.getElementById('tournamentForm').addEventListener('submit', (event) => {
   event.preventDefault();
 
