@@ -498,6 +498,14 @@ const fillMatchInfo = async (matchNode) => {
   }
 
   resetScores();
+
+  if (player1Name in playerObj) {
+    loadPlayer1Character(playerObj[player1Name].char, playerObj[player1Name].skin);
+  }
+
+  if (player2Name in playerObj) {
+    loadPlayer2Character(playerObj[player2Name].char, playerObj[player2Name].skin);
+  }
 };
 
 const clearDetails = async () => {
