@@ -546,6 +546,17 @@ const clearDetails = async () => {
   }
 };
 
+const copySetToClipboard = async () => {
+  const player1Char = document.getElementById('player1Char').value;
+  const player2Char = document.getElementById('player2Char').value;
+  const player1Name = document.getElementById('player1Name').value;
+  const player2Name = document.getElementById('player2Name').value;
+  const round = document.getElementById('round').value;
+
+  const text = `${player1Name} (${player1Char}) vs. ${player2Name} (${player2Char}) - ${round}`;
+  navigator.clipboard.writeText(text);
+};
+
 const clearPlayers = async () => {
   resetScores();
 
@@ -987,6 +998,16 @@ document.getElementById('refreshSets').addEventListener('click', () => {
 
 document.getElementById('clearDetails').addEventListener('click', () => {
   clearDetails();
+});
+
+document.getElementById('copySet').addEventListener('click', (event) => {
+  copySetToClipboard().then(() => {
+    const btnTarget = event.currentTarget;
+    btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-check.svg');
+    setTimeout(() => {
+      btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard.svg');
+    }, 1000);
+  });
 });
 
 document.getElementById('clearPlayers').addEventListener('click', () => {
