@@ -1054,6 +1054,11 @@ document.getElementById('bracketForm').addEventListener('submit', (event) => {
   saveInfoObj(serializedInfo);
 });
 
+// Enable tooltips
+
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle-tooltip="tooltip"]');
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
 // Set mouse bindings
 
 Mousetrap.bind(['1'], () => { incrementP1Score() });
