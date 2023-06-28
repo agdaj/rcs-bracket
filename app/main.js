@@ -4,8 +4,8 @@
 const { app, BrowserWindow, ipcMain, dialog, Notification } = require('electron');
 const path = require('path');
 const fs = require('fs');
-
-const ICON_PATH = path.join(__dirname, 'assets', 'images', 'icons');
+const constants = require('./constants');
+require('./menu');
 
 // White pixel
 const BLANK_IMG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=';
@@ -18,7 +18,7 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 1280,
     height: 540,
-    icon: path.join(ICON_PATH, 'RCS.png'),
+    icon: path.join(constants.ICON_PATH, 'RCS.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -43,14 +43,14 @@ app.whenReady().then(() => {
     settings = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), 'settings.json'), 'utf-8'));
   } catch (err) {
     if (err.code === 'ENOENT') {
-      dialog.showMessageBoxSync({ message: 'Hello!\nBefore using this app, please start by initializing your settings', type: 'info', icon: path.join(ICON_PATH, 'RCS.png'), detail: 'SETTINGS_NOT_FOUND' });
+      dialog.showMessageBoxSync({ message: 'Hello!\nBefore using this app, please start by initializing your settings', type: 'info', icon: path.join(constants.ICON_PATH, 'RCS.png'), detail: 'SETTINGS_NOT_FOUND' });
 
-      dialog.showMessageBoxSync({ message: 'First, please select the directory where assets can be retrieved from', type: 'info', icon: path.join(ICON_PATH, 'RCS.png'), detail: 'SET_ASSETS_PATH' });
+      dialog.showMessageBoxSync({ message: 'First, please select the directory where assets can be retrieved from', type: 'info', icon: path.join(constants.ICON_PATH, 'RCS.png'), detail: 'SET_ASSETS_PATH' });
       let assets_path = dialog.showOpenDialogSync({ title: 'Path To Assets', defaultPath: app.getPath('documents'), properties: ['openDirectory']});
       if (assets_path === undefined) throw 'Assets path not set';
       else assets_path = assets_path[0];
 
-      dialog.showMessageBoxSync({ message: 'Next, please select the directory where output will be saved to', type: 'info', icon: path.join(ICON_PATH, 'RCS.png'), detail: 'SET_OUTPUT_PATH' });
+      dialog.showMessageBoxSync({ message: 'Next, please select the directory where output will be saved to', type: 'info', icon: path.join(constants.ICON_PATH, 'RCS.png'), detail: 'SET_OUTPUT_PATH' });
       let output_path = dialog.showOpenDialogSync({ title: 'Path To Output', defaultPath: app.getPath('documents'), properties: ['openDirectory']});
       if (output_path === undefined) throw 'Output path not set';
       else output_path = output_path[0];
@@ -62,7 +62,7 @@ app.whenReady().then(() => {
       }
 
       fs.writeFileSync(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(settings), 'utf-8');
-      dialog.showMessageBoxSync({ message: 'Settings have been saved successfully', type: 'info', icon: path.join(ICON_PATH, 'RCS.png'), detail: 'SETTINGS_SAVED' });
+      dialog.showMessageBoxSync({ message: 'Settings have been saved successfully', type: 'info', icon: path.join(constants.ICON_PATH, 'RCS.png'), detail: 'SETTINGS_SAVED' });
     } else {
       throw err;
     }
@@ -73,7 +73,7 @@ app.whenReady().then(() => {
     return fs.promises.readFile(path.join(settings['path.assets'], 'character-list.json'), 'utf-8')
             .then((result) => { return JSON.parse(result) })
             .catch(() => {
-              new Notification({ title: `${CHARACTERS_NOT_FOUND_TITLE} (fetch:character-list)`, body: CHARACTERS_NOT_FOUND_BODY, icon: path.join(ICON_PATH, 'RCS.png') }).show();
+              new Notification({ title: `${CHARACTERS_NOT_FOUND_TITLE} (fetch:character-list)`, body: CHARACTERS_NOT_FOUND_BODY, icon: path.join(constants.ICON_PATH, 'RCS.png') }).show();
               return [];
             });
   });
@@ -81,7 +81,7 @@ app.whenReady().then(() => {
     return fs.promises.readFile(path.join(settings['path.assets'], 'character-select-screen', character + '.png'))
             .then((result) => { return result.toString('base64') })
             .catch(() => {
-              new Notification({ title: `${CHARACTERS_NOT_FOUND_TITLE} (fetch:character-select-screen)`, body: CHARACTERS_NOT_FOUND_BODY, icon: path.join(ICON_PATH, 'RCS.png') }).show();
+              new Notification({ title: `${CHARACTERS_NOT_FOUND_TITLE} (fetch:character-select-screen)`, body: CHARACTERS_NOT_FOUND_BODY, icon: path.join(constants.ICON_PATH, 'RCS.png') }).show();
               return BLANK_IMG;
             });
   });
@@ -98,7 +98,7 @@ app.whenReady().then(() => {
                       });
             })
             .catch(() => {
-              new Notification({ title: `${CHARACTERS_NOT_FOUND_TITLE} (fetch:character-icons)`, body: CHARACTERS_NOT_FOUND_BODY, icon: path.join(ICON_PATH, 'RCS.png') }).show();
+              new Notification({ title: `${CHARACTERS_NOT_FOUND_TITLE} (fetch:character-icons)`, body: CHARACTERS_NOT_FOUND_BODY, icon: path.join(constants.ICON_PATH, 'RCS.png') }).show();
               return [];
             });
   });
@@ -106,7 +106,7 @@ app.whenReady().then(() => {
     return fs.promises.readFile(path.join(settings['path.assets'], 'renders', character, skin))
             .then((result) => { return result.toString('base64') })
             .catch(() => {
-              new Notification({ title: `${CHARACTERS_NOT_FOUND_TITLE} (fetch:character-render)`, body: CHARACTERS_NOT_FOUND_BODY, icon: path.join(ICON_PATH, 'RCS.png') }).show();
+              new Notification({ title: `${CHARACTERS_NOT_FOUND_TITLE} (fetch:character-render)`, body: CHARACTERS_NOT_FOUND_BODY, icon: path.join(constants.ICON_PATH, 'RCS.png') }).show();
               return BLANK_IMG;
             });
   });
@@ -152,6 +152,3 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
