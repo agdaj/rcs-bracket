@@ -462,7 +462,15 @@ const populateSets = async (eventId, apiToken) => {
             let matchNode = createMatch(setNode);
             matchNode.addEventListener('click', (event) => {
               let setId = event.currentTarget.getAttribute('data-set-id');
-              fillMatchInfo(setIdObj[setId]);
+              fillMatchInfo(setIdObj[setId])
+                .then(() => {
+                  document.getElementById('playerCard').scrollIntoView();
+                })
+                .catch(err => {
+                  console.log(err);
+                  const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
+                  toast.show();
+                });
             });
             setContent.appendChild(matchNode);
 
@@ -1001,13 +1009,19 @@ document.getElementById('clearDetails').addEventListener('click', () => {
 });
 
 document.getElementById('copySet').addEventListener('click', (event) => {
-  copySetToClipboard().then(() => {
-    const btnTarget = event.currentTarget;
-    btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-check.svg');
-    setTimeout(() => {
-      btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard.svg');
-    }, 1000);
-  });
+  copySetToClipboard()
+    .then(() => {
+      const btnTarget = event.currentTarget;
+      btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-check.svg');
+      setTimeout(() => {
+        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard.svg');
+      }, 1000);
+    })
+    .catch(err => {
+      console.log(err);
+      const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
+      toast.show();
+    });
 });
 
 document.getElementById('clearPlayers').addEventListener('click', () => {
