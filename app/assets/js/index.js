@@ -929,7 +929,7 @@ const updatePlayerObj = async (infoObj) => {
   }
 
   window.fsAPI.save.playerObj(playerObj);
-}
+};
 
 const saveInfoObj = async (infoObj) => {
   let success = await window.fsAPI.save.infoObj(infoObj);
@@ -940,7 +940,7 @@ const saveInfoObj = async (infoObj) => {
     const toast = new bootstrap.Toast(document.getElementById('saveInfoFailToast'));
     toast.show();
   }
-}
+};
 
 // Call functions for initial rendering
 
@@ -1006,6 +1006,10 @@ document.getElementById('refreshSets').addEventListener('click', () => {
 
 document.getElementById('clearDetails').addEventListener('click', () => {
   clearDetails();
+});
+
+document.getElementById('refreshAssets').addEventListener('click', () => {
+  loadCharacterList();
 });
 
 document.getElementById('copySet').addEventListener('click', (event) => {
