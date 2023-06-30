@@ -17,17 +17,21 @@ const template = [
       {
         label: 'Change Assets Folder...',
         click: async () => {
-          let assets_path = dialog.showOpenDialogSync({ title: 'Path To Assets', defaultPath: app.getPath('documents'), properties: ['openDirectory']});
+          let settings = await fs.promises.readFile(path.join(app.getPath('userData'), 'settings.json'), 'utf-8')
+                                .then((result) => { return JSON.parse(result) })
+                                .catch(() => {
+                                  new Notification({ title: 'Settings Not Found', body: 'Restart the app to initialize settings', icon: path.join(constants.ICON_PATH, 'RCS.png') }).show();
+                                  return null;
+                                });
+          if (settings === null) return;
+
+          let assets_path = dialog.showOpenDialogSync({ title: 'Path To Assets', defaultPath: settings['path.assets'], properties: ['openDirectory']});
           if (assets_path === undefined) return;
           else assets_path = assets_path[0];
 
-          fs.promises.readFile(path.join(app.getPath('userData'), 'settings.json'), 'utf-8')
-            .then((result) => { return JSON.parse(result) })
-            .then((obj) => {
-              obj['path.assets'] = assets_path;
-              return obj;
-            })
-            .then((obj) => { return fs.promises.writeFile(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(obj), 'utf-8') })
+          settings['path.assets'] = assets_path;
+
+          fs.promises.writeFile(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(settings), 'utf-8')
             .then(() => {
               app.relaunch();
               app.exit();
@@ -40,24 +44,28 @@ const template = [
       {
         label: 'Change Output Folder...',
         click: async () => {
-          let output_path = dialog.showOpenDialogSync({ title: 'Path To Output', defaultPath: app.getPath('documents'), properties: ['openDirectory']});
+          let settings = await fs.promises.readFile(path.join(app.getPath('userData'), 'settings.json'), 'utf-8')
+                                .then((result) => { return JSON.parse(result) })
+                                .catch(() => {
+                                  new Notification({ title: 'Settings Not Found', body: 'Restart the app to initialize settings', icon: path.join(constants.ICON_PATH, 'RCS.png') }).show();
+                                  return null;
+                                });
+          if (settings === null) return;
+
+          let output_path = dialog.showOpenDialogSync({ title: 'Path To Output', defaultPath: settings['path.output'], properties: ['openDirectory']});
           if (output_path === undefined) return;
           else output_path = output_path[0];
 
-          fs.promises.readFile(path.join(app.getPath('userData'), 'settings.json'), 'utf-8')
-              .then((result) => { return JSON.parse(result) })
-              .then((obj) => {
-                obj['path.output'] = output_path;
-                return obj;
-              })
-              .then((obj) => { return fs.promises.writeFile(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(obj), 'utf-8') })
-              .then(() => {
-                app.relaunch();
-                app.exit();
-              })
-              .catch(() => {
-                new Notification({ title: 'Path To Output Folder Not Updated', body: 'Changes could not be saved', icon: path.join(constants.ICON_PATH, 'RCS.png') }).show();
-              });
+          settings['path.output'] = output_path;
+
+          fs.promises.writeFile(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(settings), 'utf-8')
+            .then(() => {
+              app.relaunch();
+              app.exit();
+            })
+            .catch(() => {
+              new Notification({ title: 'Path To Output Folder Not Updated', body: 'Changes could not be saved', icon: path.join(constants.ICON_PATH, 'RCS.png') }).show();
+            });
         },
       },
       { type: 'separator' },
