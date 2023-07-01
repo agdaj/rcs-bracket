@@ -368,9 +368,18 @@
           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
       </div>
+      <div class="toast align-items-center text-bg-success border-0" id="savePlayerInfoSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Players info successfully saved!
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
     </div>
 
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSettings" aria-labelledby="offcanvasSettingsLabel">
+      <button class="btn btn-success btn-offcanvas position-absolute bottom-0" type="button" id="offCanvasSettingsBtn" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Settings" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSettings" aria-controls="offcanvasSettings"><img src="assets/images/svg/gear.svg" alt="Gear SVG"></button>
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasSettingsLabel">Settings</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -379,6 +388,52 @@
         <div class="mb-3">
           <label for="apiTokenInput" class="form-label">start.gg API Token</label>
           <input type="password" class="form-control" id="apiTokenInput" placeholder="API Token">
+        </div>
+      </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasPlayers" aria-labelledby="offcanvasPlayersLabel">
+      <button class="btn btn-success btn-offcanvas position-absolute bottom-0" type="button" id="offCanvasPlayersBtn" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Edit Players Info" data-bs-toggle="offcanvas" data-bs-target="#offcanvasPlayers" aria-controls="offcanvasPlayers"><img src="assets/images/svg/people.svg" alt="People SVG"></button>
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasPlayersLabel">Players</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <form id="playersForm">
+          <div class="mb-3">
+            <label for="editPlayersJSON" class="form-label">JSON</label>
+            <textarea class="form-control" name="editPlayersJSON" id="editPlayersJSON" rows="13"></textarea>
+          </div>
+          <div class="mb-3">
+            <button class="btn btn-success float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Save Players Info"><img src="assets/images/svg/save.svg" alt="Save SVG"></button>
+          </div>
+        </form>
+      </div>
+
+      <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-danger border-0" id="savePlayerInfoFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Failed to save players info!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-danger border-0" id="validatePlayerInfoFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Failed players info validation!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-danger border-0" id="syntaxPlayerInfoFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Players info syntax error!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
         </div>
       </div>
     </div>

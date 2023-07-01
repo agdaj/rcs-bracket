@@ -902,6 +902,38 @@ const swapCommentators = async () => {
   document.getElementById('commentator2Name').value = commentator1Name;
 };
 
+const validatePlayerObj = async (newPlayerObj) => {
+  newPlayerObj = JSON.parse(newPlayerObj);
+
+  for (const [player, info] of Object.entries(newPlayerObj)) {
+    if (player.trim() == '') {
+      throw 'Invalid Player Object';
+    }
+
+    let infoKeys = Object.keys(info);
+    if (infoKeys.length !== 2 || !(infoKeys.includes('char') && infoKeys.includes('skin'))) {
+      throw 'Invalid Player Object';
+    }
+  }
+
+  return newPlayerObj;
+};
+
+const editPlayerObj = async (newPlayerObj) => {
+  playerObj = newPlayerObj;
+
+  const playerListDatalist = document.getElementById('playerList');
+  playerListDatalist.replaceChildren();
+
+  for (let player in playerObj) {
+    let playerListOption = document.createElement('option');
+    playerListOption.setAttribute('value', player);
+    playerListDatalist.appendChild(playerListOption)
+  }
+
+  window.fsAPI.save.playerObj(playerObj);
+};
+
 const updatePlayerObj = async (infoObj) => {
   let player1Name = infoObj['player1Name'];
   let player1Char = infoObj['player1Char'];
@@ -1070,6 +1102,37 @@ document.getElementById('bracketForm').addEventListener('submit', (event) => {
 
   updatePlayerObj(serializedInfo);
   saveInfoObj(serializedInfo);
+});
+
+document.getElementById('offcanvasPlayers').addEventListener('show.bs.offcanvas', () => {
+  document.getElementById('editPlayersJSON').value = JSON.stringify(playerObj, null, 2);
+});
+
+document.getElementById('playersForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const serializedInfo = Object.fromEntries(formData.entries());
+
+  validatePlayerObj(serializedInfo['editPlayersJSON'])
+    .then(newPlayerJSON => editPlayerObj(newPlayerJSON))
+    .then(() => {
+      document.getElementById('offCanvasPlayersBtn').click();
+      const toast = new bootstrap.Toast(document.getElementById('savePlayerInfoSuccessToast'));
+      toast.show();
+    })
+    .catch(err => {
+      console.log(err);
+      if (err instanceof SyntaxError) {
+        const toast = new bootstrap.Toast(document.getElementById('syntaxPlayerInfoFailToast'));
+        toast.show();
+      } else if (err === 'Invalid Player Object') {
+        const toast = new bootstrap.Toast(document.getElementById('validatePlayerInfoFailToast'));
+        toast.show();
+      } else {
+        const toast = new bootstrap.Toast(document.getElementById('savePlayerInfoFailToast'));
+        toast.show();
+      }
+    });
 });
 
 // Enable tooltips

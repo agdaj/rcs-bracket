@@ -9,6 +9,24 @@ body {
   width: 1em;
 }
 
+.btn-success img {
+  filter: brightness(0) invert(1);
+}
+
+.offcanvas-start .btn-offcanvas {
+  left: 400px;
+  visibility: visible;
+  border-top-left-radius: 0%;
+  border-bottom-left-radius: 0%;
+}
+
+.offcanvas-end .btn-offcanvas {
+  right: 400px;
+  visibility: visible;
+  border-top-right-radius: 0%;
+  border-bottom-right-radius: 0%;
+}
+
 .nav-pills > li > a.active {
   background-color: crimson !important;
   color: white !important;
