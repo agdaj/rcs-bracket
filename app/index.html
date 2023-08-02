@@ -14,274 +14,220 @@
   </head>
   <body>
     <div class="container-fluid pb-5">
-      <div class="row">
-        <div class="col-12 col-sm-8">
-          <form id="tournamentForm">
-            <div class="card mt-3 mb-3" id="tournamentURLCard">
-              <div class="card-header text-center">
-                <span id="tournamentURLHeader">
-                  <img src="assets/images/svg/link.svg" alt="Link SVG" class="card-icon">
-                    Tournament
-                  <span class="form-text" id="tournamentURLHelp">
-                    Enter start.gg tournament URL
-                  </span>
-                </span>
-                <button class="btn btn-outline-secondary btn-sm float-end" type="button" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Add API Token" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSettings" aria-controls="offcanvasSettings"><img src="assets/images/svg/key.svg" alt="Key SVG"></button>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col">
-                    <input type="hidden" name="apiToken" value="">
-                    <div class="input-group" id="tournamentURLGroup">
-                      <input class="form-control" type="text" name="tournamentURL" id="tournamentURL" placeholder="https://www.start.gg/tournament/NAME/details" aria-describedby="tournamentURLHelp" required>
-                      <button type="submit" class="btn btn-outline-secondary" id="findFormBtn">Find</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="col-12 col-sm-4">
-          <form id="eventForm">
-            <div class="card mt-0 mb-3 mt-sm-3" id="eventCard">
-              <div class="card-header text-center">
-                <span id="eventHeader">
-                  <img src="assets/images/svg/controller.svg" alt="Controller SVG" class="card-icon">
-                    Event
-                  <span class="form-text" id="eventHelp">
-                    Select tournament event
-                  </span>
-                  <span class="spinner-border spinner-border-sm d-none" id="eventSpinner" role="status" aria-hidden="true"></span>
-                </span>
-                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="refreshEvents" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Refresh Events"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col">
-                    <input type="hidden" name="apiToken" value="">
-                    <select class="form-select" name="event" id="event" aria-label="Event select">
-                      <option disabled selected>Enter URL</option>
-                    </select>
-                    <button type="submit" class="btn btn-success d-none" id="fetchFormBtn">Fetch</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <form id="setsForm">
-            <div class="card mb-3" id="setsCard">
-              <div class="card-header text-center">
-                <span id="setsHeader">
-                  <img src="assets/images/svg/diagram-2.svg" alt="Bracket SVG" class="card-icon">
-                    Sets
-                  <span class="form-text" id="setsHelp">
-                    Select tournament set
-                  </span>
-                  <span class="spinner-border spinner-border-sm d-none" id="setSpinner" role="status" aria-hidden="true"></span>
-                </span>
-                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="refreshSets" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Refresh Sets"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col">
-                    <ul class="nav nav-pills justify-content-center mb-3" id="setPhases" role="tablist">
-                    </ul>
-                    <div class="tab-content" id="setPhaseGroup">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
       <form id="bracketForm">
         <div class="row">
           <div class="col">
-            <div class="card mb-3" id="detailsCard">
-              <div class="card-header text-center">
-                <span id="detailsHeader">
-                  <img src="assets/images/svg/trophy.svg" alt="Trophy SVG" class="card-icon">
-                    Details
-                  <span id="detailsHelp" class="form-text">
-                    Enter tournament, event and set details
-                  </span>
-                </span>
-                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearDetails" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Clear Details"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
-              </div>
+            <div class="card text-center mt-3">
+              <h5 class="card-header">
+                Bracket Manager
+              </h5>
               <div class="card-body">
-                <div class="row mb-3">
-                  <div class="col-12 col-sm-8 mb-3 mb-sm-0">
-                    <input class="form-control" type="text" name="tournamentName" id="tournamentName" placeholder="Tournament Name" aria-describedby="detailsHelp">
-                  </div>
-                  <div class="col-12 col-sm-4">
-                    <input class="form-control" type="text" name="eventName" id="eventName" placeholder="Event Name" aria-describedby="detailsHelp">
-                  </div>
-                </div>
-                <div class="row mb-3">
-                  <div class="col-12 col-sm-8 mb-3 mb-sm-0">
-                    <input class="form-control" type="text" name="round" id="round" placeholder="Round" aria-describedby="detailsHelp">
-                  </div>
-                  <div class="col-6 col-sm-2">
-                    <select class="form-select" name="bestOf" id="bestOf" aria-label="Best of select" aria-describedby="detailsHelp">
-                      <option selected>Best of</option>
-                      <option>First to</option>
-                    </select>
-                  </div>
-                  <div class="col-6 col-sm-2">
-                    <input class="form-control" type="number" min="1" step="1" name="bestOfNum" id="bestOfNum" value="3" aria-describedby="detailsHelp">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <div class="card mb-3" id="playerCard">
-              <div class="card-header text-center">
-                <span id="playerHeader">
-                  <img src="assets/images/svg/people.svg" alt="People SVG" class="card-icon">
-                    Players
-                  <span id="playerHelp" class="form-text">
-                    Enter player details, score and characters
-                  </span>
-                </span>
-                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Clear Players"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
-                <button class="btn btn-outline-secondary btn-sm float-end me-1" type="button" id="copySet" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Copy Set To Clipboard"><img src="assets/images/svg/clipboard.svg" alt="Clipboard SVG"></button>
-                <button class="btn btn-outline-secondary btn-sm float-end me-1" type="button" id="refreshAssets" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Refresh Assets"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
-              </div>
-              <div class="card-body text-center">
-                <div class="row mb-3">
-                  <div class="col-12 col-sm-5">
-                    <div class="row justify-content-center justify-content-sm-end mb-3">
-                      <div class="col-3 col-sm-4 order-sm-last">
-                        <input class="form-control" type="number" min="0" step="1" name="player1Score" id="player1Score" value="0" aria-describedby="playerHelp">
+                <div class="row">
+                  <div class="col-12 col-sm-11 order-last order-sm-first">
+                    <div class="row">
+                      <div class="col-12 col-sm-8 mb-3">
+                        <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Tournament">
+                          <span class="input-group-text"><img src="assets/images/svg/trophy.svg" alt="Trophy SVG"></span>
+                          <input class="form-control" type="text" name="tournamentName" id="tournamentName" placeholder="Tournament Name">
+                        </div>
                       </div>
-                      <div class="col-3 order-sm-first l-check">
-                        <input class="btn-check" type="checkbox" name="player1LCheck" id="player1LCheck" autocomplete="off">
-                        <label class="btn btn-danger" for="player1LCheck">[L]</label>
-                      </div>
-                    </div>
-                    <div class="row justify-content-center justify-content-sm-end mb-3">
-                      <div class="col-12">
-                        <input type="hidden" name="player1Colour" id="player1Colour">
-                        <div class="input-group" id="player1NameGroup">
-                          <button class="btn btn-outline-secondary dropdown-toggle" id="player1ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
-                          <ul class="dropdown-menu" id="player1ColourList"></ul>
-                          <input class="form-control" type="text" list="playerList" name="player1Name" id="player1Name" placeholder="Player 1" aria-describedby="playerHelp">
+                      <div class="col-12 col-sm-4 mb-3">
+                        <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Event">
+                          <span class="input-group-text"><img src="assets/images/svg/controller.svg" alt="Controller SVG"></span>
+                          <input class="form-control" type="text" name="eventName" id="eventName" placeholder="Event Name">
                         </div>
                       </div>
                     </div>
-                    <div class="row mb-3">
-                      <div class="col-4">
-                        <div class="row">
-                          <input type="hidden" name="player1Char" id="player1Char">
-                          <a href="#player1CharSSModal" class="link-char-select" data-bs-toggle="modal">
-                            <img id="player1CharSSImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAuCAQAAAAVMFaXAAAAOElEQVR42u3OMQEAAAwCoNm/9AoYwAMSkBsXQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBweYBxOUAL6pRsVoAAAAASUVORK5CYII=">
-                          </a>
+                    <div class="row">
+                      <div class="col-12 col-sm-8 mb-3">
+                        <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Round">
+                          <span class="input-group-text"><img src="assets/images/svg/diagram-2.svg" alt="Bracket SVG"></span>
+                          <input class="form-control" type="text" name="round" id="round" placeholder="Round">
                         </div>
                       </div>
-                      <div class="col-8">
-                        <div class="render-skin">
-                          <img id="player1SkinRenderImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
-                        </div>
+                      <div class="col-6 col-sm-2 mb-3">
+                        <select class="form-select form-select-sm" name="bestOf" id="bestOf" aria-label="Best of select">
+                          <option selected>Best of</option>
+                          <option>First to</option>
+                        </select>
                       </div>
-                    </div>
-                    <div class="row mb-3 mb-sm-0">
-                      <div class="col-12">
-                        <div id="player1SkinDiv" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
+                      <div class="col-6 col-sm-2 mb-3">
+                        <input class="form-control form-control-sm" type="number" min="1" step="1" name="bestOfNum" id="bestOfNum" value="3">
                       </div>
                     </div>
                   </div>
-                  <div class="col-12 col-sm-2">
+                  <div class="col-12 col-sm-1 order-first order-sm-last">
                     <div class="row justify-content-center">
                       <div class="col-2 col-sm-12 mb-3">
-                        <button class="btn btn-outline-secondary" type="button" id="resetScores" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Reset Scores"><img src="assets/images/svg/arrow-counterclockwise.svg" alt="Reset SVG"></button>
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="clearForm" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Clear Form"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
                       </div>
-                      <div class="col-2 col-sm-12 mb-3 mb-sm-0">
-                        <button class="btn btn-outline-secondary" type="button" id="swapPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Swap Players"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12 col-sm-5">
-                    <div class="row justify-content-center justify-content-sm-start mb-3">
-                      <div class="col-3 col-sm-4">
-                        <input class="form-control" type="number" min="0" step="1" name="player2Score" id="player2Score" value="0" aria-describedby="playerHelp">
-                      </div>
-                      <div class="col-3 l-check">
-                        <input class="btn-check" type="checkbox" name="player2LCheck" id="player2LCheck" autocomplete="off">
-                        <label class="btn btn-danger" for="player2LCheck">[L]</label>
-                      </div>
-                    </div>
-                    <div class="row justify-content-center justify-content-sm-start mb-3">
-                      <div class="col-12">
-                        <input type="hidden" name="player2Colour" id="player2Colour">
-                        <div class="input-group" id="player2NameGroup">
-                          <button class="btn btn-outline-secondary dropdown-toggle" id="player2ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
-                          <ul class="dropdown-menu" id="player2ColourList"></ul>
-                          <input class="form-control" type="text" list="playerList" name="player2Name" id="player2Name" placeholder="Player 2" aria-describedby="playerHelp">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row mb-3">
-                      <div class="col-4 order-sm-last">
-                        <div class="row">
-                          <input type="hidden" name="player2Char" id="player2Char">
-                          <a href="#player2CharSSModal" class="link-char-select" data-bs-toggle="modal">
-                            <img id="player2CharSSImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAuCAQAAAAVMFaXAAAAOElEQVR42u3OMQEAAAwCoNm/9AoYwAMSkBsXQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBweYBxOUAL6pRsVoAAAAASUVORK5CYII=">
-                          </a>
-                        </div>
-                      </div>
-                      <div class="col-8 order-sm-first">
-                        <div class="render-skin">
-                          <img id="player2SkinRenderImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row mb-3 mb-sm-0">
-                      <div class="col-12">
-                        <div id="player2SkinDiv" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
+                      <div class="col-2 col-sm-12 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="refreshAssets" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Refresh Assets"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <div class="card" id="commentatorCard">
-              <div class="card-header text-center">
-                <span id="commentatorHeader">
-                  <img src="assets/images/svg/headset.svg" alt="Headset SVG" class="card-icon">
-                    Commentators
-                  <span id="commentatorHelp" class="form-text">
-                    Enter commentator names
-                  </span>
-                </span>
-                <button class="btn btn-outline-secondary btn-sm float-end" type="button" id="clearCommentators" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Clear Commentators"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
-              </div>
-              <div class="card-body text-center">
-                <div class="row">
+                <div class="row g-0">
+                  <div class="col-12 col-md-5">
+                    <div class="card mb-3">
+                      <div class="row g-0">
+                        <div class="col-md-2 d-flex flex-row flex-md-column" id="player1CharCol">
+                          <div class="flex-grow-1">
+                            <input type="hidden" name="player1Char" id="player1Char">
+                            <a href="#player1CharSSModal" data-bs-toggle="modal">
+                              <img class="img-char img-player-1-char" id="player1SkinRenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 1 Skin Render">
+                            </a>
+                          </div>
+                          <div class="flex-grow-1 d-none doubles-char">
+                            <input type="hidden" name="player1Char2" id="player1Char2">
+                            <a href="#player1Char2SSModal" data-bs-toggle="modal">
+                              <img class="img-char img-player-1-char" id="player1Skin2RenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 1 Skin Render 2">
+                            </a>
+                          </div>
+                        </div>
+                        <div class="col-md-10">
+                          <div class="card-header">
+                            <div class="row justify-content-center justify-content-md-between">
+                              <div class="col-3 order-1">
+                                <input type="hidden" name="player1Colour" id="player1Colour">
+                                <div class="btn-group dropdown">
+                                  <button class="btn btn-outline-secondary btn-sm dropdown-toggle" id="player1ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                                  <ul class="dropdown-menu" id="player1ColourList"></ul>
+                                </div>
+                              </div>
+                              <div class="col-3 offset-md-2 offset-xl-3 order-last order-md-2">
+                                <div class="l-check">
+                                  <input class="btn-check" type="checkbox" name="player1LCheck" id="player1LCheck" autocomplete="off">
+                                  <label class="btn btn-danger btn-sm" for="player1LCheck">[L]</label>
+                                </div>
+                              </div>
+                              <div class="col-4 col-sm-2 col-md-4 col-xl-3 order-2 order-md-last">
+                                <input class="form-control form-control-sm" type="number" min="0" step="1" name="player1Score" id="player1Score" value="0">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <div class="row mb-3">
+                              <div class="col-12">
+                                <input type="hidden" name="player1Colour" id="player1Colour">
+                                <div class="input-group input-group-sm" id="player1NameGroup" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Player 1 Name">
+                                  <span class="input-group-text"><img src="assets/images/svg/people.svg" alt="People SVG"></span>
+                                  <input class="form-control" type="text" list="playerList" name="player1Name" id="player1Name" placeholder="Player 1">
+                                </div>
+                              </div>
+                            </div>
+                            <hr class="border border-danger border-1 opacity-50">
+                            <div class="row mb-3">
+                              <div class="col-12">
+                                <div id="player1SkinDiv" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
+                              </div>
+                            </div>
+                            <div class="row d-none doubles-char">
+                              <div class="col-12">
+                                <div id="player1Skin2Div" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <div class="row justify-content-center mt-md-2">
+                      <div class="col-2 col-md-12 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="resetScores" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Reset Scores"><img src="assets/images/svg/arrow-counterclockwise.svg" alt="Reset SVG"></button>
+                      </div>
+                      <div class="col-2 col-md-12 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="swapPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Swap Players"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
+                      </div>
+                      <div class="col-2 col-md-12 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="clearPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Clear Players"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
+                      </div>
+                      <div class="col-2 col-md-12 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="copySet" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Copy Set To Clipboard"><img src="assets/images/svg/clipboard.svg" alt="Clipboard SVG"></button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-5">
+                    <div class="card mb-3">
+                      <div class="row g-0">
+                        <div class="col-md-10">
+                          <div class="card-header">
+                            <div class="row justify-content-center justify-content-md-between">
+                              <div class="col-3 offset-md-2 offset-xl-3 order-1 order-md-last">
+                                <input type="hidden" name="player2Colour" id="player2Colour">
+                                <div class="btn-group dropdown">
+                                  <button class="btn btn-outline-secondary btn-sm dropdown-toggle" id="player2ColourBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                                  <ul class="dropdown-menu" id="player2ColourList"></ul>
+                                </div>
+                              </div>
+                              <div class="col-3 order-last order-md-2">
+                                <div class="l-check">
+                                  <input class="btn-check" type="checkbox" name="player2LCheck" id="player2LCheck" autocomplete="off">
+                                  <label class="btn btn-danger btn-sm" for="player2LCheck">[L]</label>
+                                </div>
+                              </div>
+                              <div class="col-4 col-sm-2 col-md-4 col-xl-3 order-2 order-md-first">
+                                <input class="form-control form-control-sm" type="number" min="0" step="1" name="player2Score" id="player2Score" value="0">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <div class="row mb-3">
+                              <div class="col-12">
+                                <input type="hidden" name="player2Colour" id="player2Colour">
+                                <div class="input-group input-group-sm" id="player2NameGroup" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Player 2 Name">
+                                  <span class="input-group-text"><img src="assets/images/svg/people.svg" alt="People SVG"></span>
+                                  <input class="form-control" type="text" list="playerList" name="player2Name" id="player2Name" placeholder="Player 2">
+                                </div>
+                              </div>
+                            </div>
+                            <hr class="border border-danger border-1 opacity-50">
+                            <div class="row mb-3">
+                              <div class="col-12">
+                                <div id="player2SkinDiv" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
+                              </div>
+                            </div>
+                            <div class="row d-none doubles-char">
+                              <div class="col-12">
+                                <div id="player2Skin2Div" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-2 d-flex flex-row flex-md-column" id="player2CharCol">
+                          <div class="flex-grow-1">
+                            <input type="hidden" name="player2Char" id="player2Char">
+                            <a href="#player2CharSSModal" data-bs-toggle="modal">
+                              <img class="img-char img-player-2-char" id="player2SkinRenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 2 Skin Render">
+                            </a>
+                          </div>
+                          <div class="flex-grow-1 d-none doubles-char">
+                            <input type="hidden" name="player2Char2" id="player2Char2">
+                            <a href="#player2Char2SSModal" data-bs-toggle="modal">
+                              <img class="img-char img-player-2-char" id="player2Skin2RenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 2 Skin Render 2">
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row g-0">
                   <div class="col-12 col-sm-5 mb-3 mb-sm-0">
-                    <input class="form-control" type="text" list="playerList" name="commentator1Name" id="commentator1Name" placeholder="Commentator 1" aria-describedby="commentatorHelp">
+                    <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Commentator 1">
+                      <span class="input-group-text"><img src="assets/images/svg/headset.svg" alt="Headset SVG"></span>
+                      <input class="form-control" type="text" list="playerList" name="commentator1Name" id="commentator1Name" placeholder="Commentator 1">
+                    </div>
                   </div>
                   <div class="col-12 col-sm-2 mb-3 mb-sm-0">
-                    <button class="btn btn-outline-secondary" type="button" id="swapCommentators" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Swap Commentators"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
+                    <button class="btn btn-outline-secondary btn-sm" type="button" id="swapCommentators" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Swap Commentators"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
                   </div>
                   <div class="col-12 col-sm-5">
-                    <input class="form-control" type="text" list="playerList" name="commentator2Name" id="commentator2Name" placeholder="Commentator 2" aria-describedby="commentatorHelp">
+                    <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Commentator 2">
+                      <span class="input-group-text"><img src="assets/images/svg/headset.svg" alt="Headset SVG"></span>
+                      <input class="form-control" type="text" list="playerList" name="commentator2Name" id="commentator2Name" placeholder="Commentator 2">
+                    </div>
                   </div>
                 </div>
               </div>
@@ -318,6 +264,24 @@
         </div>
       </div>
     </div>
+    <div class="modal fade modal-char-ss" id="player1Char2SSModal" tabindex="-1" aria-labelledby="player1Char2SSModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content" data-bs-dismiss="modal">
+          <div class="modal-body">
+            <div id="player1Char2SS"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade modal-char-ss" id="player2Char2SSModal" tabindex="-1" aria-labelledby="player2Char2SSModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content" data-bs-dismiss="modal">
+          <div class="modal-body">
+            <div id="player2Char2SS"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="toast-container position-fixed top-0 end-0 p-3">
       <div class="toast align-items-center text-bg-success border-0" id="saveInfoSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -336,30 +300,6 @@
           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
       </div>
-      <div class="toast align-items-center text-bg-danger border-0" id="parseURLFailToast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">
-            URL does not start with https://www.start.gg!
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-      </div>
-      <div class="toast align-items-center text-bg-danger border-0" id="findEventsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">
-            Failed to find events!
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-      </div>
-      <div class="toast align-items-center text-bg-danger border-0" id="findSetsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">
-            Failed to find sets!
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-      </div>
       <div class="toast align-items-center text-bg-danger border-0" id="generalFailToast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
           <div class="toast-body">
@@ -368,49 +308,169 @@
           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
       </div>
-      <div class="toast align-items-center text-bg-success border-0" id="savePlayerInfoSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">
-            Players info successfully saved!
+    </div>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSGGSets" aria-labelledby="offcanvasSGGSetsLabel">
+      <button class="btn btn-success btn-offcanvas position-absolute bottom-0" type="button" id="offcanvasSGGSetsBtn" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="start.gg" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSGGSets" aria-controls="offcanvasSGGSets"><img src="assets/images/svg/start.gg_Icon_RGB.svg" alt="start.gg SVG"></button>
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasSGGSetsLabel">
+          <img src="assets/images/svg/start.gg_Wordmark_RGB_Black.svg" alt="start.gg Word SVG">
+          <span class="spinner-border spinner-border-sm d-none" id="spinnerSGG" role="status" aria-hidden="true"></span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="nav nav-tabs mb-3" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" type="button" role="tab" aria-controls="info-tab-pane" aria-selected="true">Info</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sets-tab" data-bs-toggle="tab" data-bs-target="#sets-tab-pane" type="button" role="tab" aria-controls="sets-tab-pane" aria-selected="false">Sets</button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
+            <div class="input-group input-group-sm mb-3" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Enter API Token">
+              <span class="input-group-text"><img src="assets/images/svg/key.svg" alt="Key SVG"></span>
+              <input class="form-control" type="password" name="apiToken" id="apiToken" placeholder="API Token" aria-label="API token input">
+              <button class="btn btn-success" id="apiTokenSaveBtn"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
+            </div>
+            <div class="input-group input-group-sm mb-3" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Tournament">
+              <span class="input-group-text"><img src="assets/images/svg/trophy.svg" alt="Trophy SVG"></span>
+              <select class="form-select" name="tournament" id="tournament" aria-label="Tournament select"></select>
+            </div>
+            <div class="input-group input-group-sm mb-3" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Event">
+              <span class="input-group-text"><img src="assets/images/svg/controller.svg" alt="Controller SVG"></span>
+              <select class="form-select" name="event" id="event" aria-label="Event select"></select>
+            </div>
+            <div class="row mb-3">
+              <div class="col text-center">
+              </div>
+            </div>
           </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          <div class="tab-pane fade" id="sets-tab-pane" role="tabpanel" aria-labelledby="sets-tab" tabindex="0">
+            <div class="row g-0 d-none" id="setSelector">
+              <div class="col-5">
+                <ul class="nav nav-pills" id="setPhases" role="tablist" aria-orientation="vertical"></ul>
+              </div>
+              <div class="col-7">
+                <div class="tab-content" id="setPhaseGroup"></div>
+              </div>
+            </div>
+            <div class="row" id="setNotice">
+              <div class="col">
+                <p class="text-center text-muted"><em>Enter start.gg API token and select tournament + event under the <strong>Info</strong> tab to populate sets</em></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-danger border-0" id="findTournamentsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Failed to find tournaments!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-danger border-0" id="findEventsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Failed to find events!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-danger border-0" id="findSetsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Failed to find sets!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-success border-0" id="loadSetsSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Sets successfully loaded!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSettings" aria-labelledby="offcanvasSettingsLabel">
-      <button class="btn btn-success btn-offcanvas position-absolute bottom-0" type="button" id="offCanvasSettingsBtn" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Settings" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSettings" aria-controls="offcanvasSettings"><img src="assets/images/svg/gear.svg" alt="Gear SVG"></button>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasSettings" aria-labelledby="offcanvasSettingsLabel">
+      <button class="btn btn-success btn-offcanvas position-absolute bottom-0" type="button" id="offcanvasSettingsBtn" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Settings" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSettings" aria-controls="offcanvasSettings"><img class="btn-close-white" src="assets/images/svg/gear.svg" alt="Gear SVG"></button>
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasSettingsLabel">Settings</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
-        <div class="mb-3">
-          <label for="apiTokenInput" class="form-label">start.gg API Token</label>
-          <input type="password" class="form-control" id="apiTokenInput" placeholder="API Token">
+        <ul class="nav nav-tabs mb-3" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="players-tab" data-bs-toggle="tab" data-bs-target="#players-tab-pane" type="button" role="tab" aria-controls="players-tab-pane" aria-selected="true">Players</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="shortcuts-tab" data-bs-toggle="tab" data-bs-target="#shortcuts-tab-pane" type="button" role="tab" aria-controls="shortcuts-tab-pane" aria-selected="false">Shortcuts</button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="players-tab-pane" role="tabpanel" aria-labelledby="players-tab" tabindex="0">
+            <form id="playersForm">
+              <div class="mb-3">
+                <label for="editPlayersJSON" class="form-label">Players JSON</label>
+                <textarea class="form-control" name="editPlayersJSON" id="editPlayersJSON" rows="6"></textarea>
+              </div>
+              <div class="mb-3">
+                <button class="btn btn-success float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Save Players Info"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
+              </div>
+            </form>
+          </div>
+          <div class="tab-pane fade" id="shortcuts-tab-pane" role="tabpanel" aria-labelledby="shortcuts-tab" tabindex="0">
+            <div class="mb-3">
+              <table class="table">
+                <thead class="table-light">
+                  <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Add 1 to Player 1 Score</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Add 1 to Player 2 Score</td>
+                  </tr>
+                  <tr>
+                    <td>Esc</td>
+                    <td>Reset Scores</td>
+                  </tr>
+                  <tr>
+                    <td>Enter</td>
+                    <td>Submit Form</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasPlayers" aria-labelledby="offcanvasPlayersLabel">
-      <button class="btn btn-success btn-offcanvas position-absolute bottom-0" type="button" id="offCanvasPlayersBtn" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Edit Players Info" data-bs-toggle="offcanvas" data-bs-target="#offcanvasPlayers" aria-controls="offcanvasPlayers"><img src="assets/images/svg/people.svg" alt="People SVG"></button>
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasPlayersLabel">Players</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body">
-        <form id="playersForm">
-          <div class="mb-3">
-            <label for="editPlayersJSON" class="form-label">JSON</label>
-            <textarea class="form-control" name="editPlayersJSON" id="editPlayersJSON" rows="12"></textarea>
-          </div>
-          <div class="mb-3">
-            <button class="btn btn-success float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Save Players Info"><img src="assets/images/svg/save.svg" alt="Save SVG"></button>
-          </div>
-        </form>
       </div>
 
       <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-success border-0" id="savePlayerInfoSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Players info successfully saved!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
         <div class="toast align-items-center text-bg-danger border-0" id="savePlayerInfoFailToast" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="d-flex">
             <div class="toast-body">

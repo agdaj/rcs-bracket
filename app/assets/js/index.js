@@ -44,16 +44,76 @@ const colourObj = [
   }
 ];
 
+let characterList = [];
+
 let setIdObj = {};
 let playerObj = {};
 
 // start.gg Interfacing
 
-const queryEvents = async (slug, apiToken) => {
+const queryTournamentCountAsAdmin = async (apiToken) => {
   const query = `
-    query TournamentQuery($slug: String) {
-      tournament(slug: $slug) {
-        name
+    query UserTournamentsAsAdmin {
+      currentUser {
+        tournaments(query: {
+          filter: {
+            tournamentView: "admin"
+          }
+        }) {
+          pageInfo {
+            total
+          }
+        }
+      }
+    }
+  `;
+  const variables = {};
+  const data = {'query': query, 'variables': variables};
+
+  return fetch('https://api.start.gg/gql/alpha', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+const queryTournamentsAsAdmin = async (page, perPage, apiToken) => {
+  const query = `
+    query UserTournamentsAsAdmin($page: Int!, $perPage: Int!) {
+      currentUser {
+        tournaments(query: {
+          page: $page
+          perPage: $perPage
+          filter: {
+            tournamentView: "admin"
+          }
+        }) {
+          nodes {
+            id
+            name
+          }
+        }
+      }
+    }
+  `;
+  const variables = {'page': page, 'perPage': perPage};
+  const data = {'query': query, 'variables': variables};
+
+  return fetch('https://api.start.gg/gql/alpha', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+const queryEvents = async (tournamentId, apiToken) => {
+  const query = `
+    query TournamentQuery($tournamentId: ID!) {
+      tournament(id: $tournamentId) {
         events {
           id
           name
@@ -61,7 +121,7 @@ const queryEvents = async (slug, apiToken) => {
       }
     }
   `;
-  const variables = {'slug': slug};
+  const variables = {'tournamentId': tournamentId};
   const data = {'query': query, 'variables': variables};
 
   return fetch('https://api.start.gg/gql/alpha', {
@@ -292,22 +352,66 @@ const loadSettings = async () => {
 
   let apiToken = settingsObj['api.token'];
 
-  document.getElementById('apiTokenInput').value = apiToken;
-  fillAPIToken(apiToken);
+  document.getElementById('apiToken').value = apiToken;
 };
 
-const fillAPIToken = async (apiToken) => {
-  let apiTokenEl = document.querySelectorAll('input[name="apiToken"]');
-  for (let i = 0; i < apiTokenEl.length; i++) {
-    apiTokenEl[i].value = apiToken;
-  }
+const populateTournaments = async (apiToken) => {
+  document.getElementById('tournament').replaceChildren();
+  document.getElementById('spinnerSGG').classList.remove('d-none');
+
+  return queryTournamentCountAsAdmin(apiToken)
+    .then(response => response.json())
+    .then(response => {
+      let tournamentQueries = [];
+
+      let page = 1;
+      let tournamentCount = 0;
+      let tournamentTotal = response['data']['currentUser']['tournaments']['pageInfo']['total'];
+      while (tournamentCount < tournamentTotal) {
+        tournamentQueries.push(queryTournamentsAsAdmin(page, perPage, apiToken));
+
+        page += 1;
+        tournamentCount += perPage;
+      }
+
+      return Promise.all(tournamentQueries);
+    })
+    .then(responses => Promise.all(responses.map(response => response.json())))
+    .then(responses => {
+      let tournamentObj = {};
+      responses.forEach(response => {
+        response['data']['currentUser']['tournaments']['nodes'].forEach(node => {
+          let tournamentId = node['id'];
+          let tournamentName = node['name'];
+          tournamentObj[tournamentId] = tournamentName;
+        })
+      });
+
+      let defaultOption = new Option('Select Tournament');
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      document.getElementById('tournament').add(defaultOption, undefined);
+      Object.entries(tournamentObj).reverse().forEach(([tournamentId, tournamentName]) => {
+        let eventOption = new Option(tournamentName, tournamentId);
+        document.getElementById('tournament').add(eventOption, undefined);
+      });
+
+      document.getElementById('spinnerSGG').classList.add('d-none');
+    })
+    .catch(err => {
+      console.log(err);
+      const toast = new bootstrap.Toast(document.getElementById('findTournamentsFailToast'));
+      toast.show();
+
+      document.getElementById('spinnerSGG').classList.add('d-none');
+    })
 };
 
-const populateEvents = async (slug, apiToken) => {
-  document.getElementById('event').innerHTML = '';
-  document.getElementById('eventSpinner').classList.remove('d-none');
+const populateEvents = async (tournamentId, apiToken) => {
+  document.getElementById('event').replaceChildren();
+  document.getElementById('spinnerSGG').classList.remove('d-none');
 
-  queryEvents(slug, apiToken)
+  return queryEvents(tournamentId, apiToken)
     .then(response => response.json())
     .then(response => {
       let events = response['data']['tournament']['events'];
@@ -320,39 +424,26 @@ const populateEvents = async (slug, apiToken) => {
         document.getElementById('event').add(eventOption, undefined);
       }
 
-      let name = response['data']['tournament']['name'];
-      document.getElementById('tournamentName').value = name;
-
-      // Save API token on successful data retrieval
-      window.fsAPI.fetch.settingsObj()
-        .then(settingsObj => {
-          settingsObj['api.token'] = apiToken;
-          window.fsAPI.save.settingsObj(settingsObj);
-        });
-
-      document.getElementById('eventSpinner').classList.add('d-none');
+      document.getElementById('spinnerSGG').classList.add('d-none');
     })
     .catch(err => {
       console.log(err);
       const toast = new bootstrap.Toast(document.getElementById('findEventsFailToast'));
       toast.show();
 
-      let defaultOption = new Option('Enter URL');
-      defaultOption.disabled = true;
-      defaultOption.selected = true;
-      document.getElementById('event').add(defaultOption, undefined);
-
-      document.getElementById('eventSpinner').classList.add('d-none');
+      document.getElementById('spinnerSGG').classList.add('d-none');
     })
 };
 
 const populateSets = async (eventId, apiToken) => {
   setIdObj = {};
-  document.getElementById('setPhases').innerHTML = '';
-  document.getElementById('setPhaseGroup').innerHTML = '';
-  document.getElementById('setSpinner').classList.remove('d-none');
+  document.getElementById('setPhases').replaceChildren();
+  document.getElementById('setPhaseGroup').replaceChildren();
+  document.getElementById('setSelector').classList.remove('d-none');
+  document.getElementById('setNotice').classList.add('d-none');
+  document.getElementById('spinnerSGG').classList.remove('d-none');
 
-  querySetCount(eventId, apiToken)
+  return querySetCount(eventId, apiToken)
     .then(response => response.json())
     .then(response => {
       let setQueries = [];
@@ -433,14 +524,14 @@ const populateSets = async (eventId, apiToken) => {
           }
 
           let setRowContent = document.createElement('div');
-          setRowContent.classList.add('row', 'flex-nowrap', 'overflow-auto', 'bracket-phase');
+          setRowContent.classList.add('row', 'bracket-phase');
           Object.entries(sets).forEach(([_, setNode]) => {
             if (setNode.slots[0].entrant === null || setNode.slots[1].entrant === null) {
               return;
             }
 
             let setContent = document.createElement('div');
-            setContent.classList.add('col', 'bracket-public');
+            setContent.classList.add('col', 'mb-3', 'bracket-public');
 
             let roundHeader = document.createElement('div');
             roundHeader.classList.add('round-header');
@@ -464,7 +555,7 @@ const populateSets = async (eventId, apiToken) => {
               let setId = event.currentTarget.getAttribute('data-set-id');
               fillMatchInfo(setIdObj[setId])
                 .then(() => {
-                  document.getElementById('playerCard').scrollIntoView();
+                  document.getElementById('offcanvasSGGSetsBtn').click();
                 })
                 .catch(err => {
                   console.log(err);
@@ -487,14 +578,17 @@ const populateSets = async (eventId, apiToken) => {
           }
         });
       });
-      document.getElementById('setSpinner').classList.add('d-none');
+
+      document.getElementById('spinnerSGG').classList.add('d-none');
     })
     .catch(err => {
       console.log(err);
       const toast = new bootstrap.Toast(document.getElementById('findSetsFailToast'));
       toast.show();
 
-      document.getElementById('setSpinner').classList.add('d-none');
+      document.getElementById('setSelector').classList.add('d-none');
+      document.getElementById('setNotice').classList.remove('d-none');
+      document.getElementById('spinnerSGG').classList.add('d-none');
     })
 };
 
@@ -507,6 +601,39 @@ const fillMatchInfo = async (matchNode) => {
   document.getElementById('player2Name').value = player2Name;
   document.getElementById('round').value = round;
 
+  adjustFormWithRound(round);
+  resetScores();
+
+  if (player1Name in playerObj) {
+    loadPlayer1Character(playerObj[player1Name].char, playerObj[player1Name].skin);
+    if (playerObj[player1Name].char2 && playerObj[player1Name].skin2) {
+      loadPlayer1Character2(playerObj[player1Name].char2, playerObj[player1Name].skin2);
+    }
+  }
+
+  if (player2Name in playerObj) {
+    loadPlayer2Character(playerObj[player2Name].char, playerObj[player2Name].skin);
+    if (playerObj[player2Name].char2 && playerObj[player2Name].skin2) {
+      loadPlayer2Character2(playerObj[player2Name].char2, playerObj[player2Name].skin2);
+    }
+  }
+};
+
+const adjustFormWithEvent = async (event) => {
+  if (event.endsWith('Doubles')) {
+    let doublesCharDivs = document.getElementsByClassName('doubles-char');
+    for (let i = 0; i < doublesCharDivs.length; i++) {
+      doublesCharDivs[i].classList.remove('d-none');
+    }
+  } else {
+    let doublesCharDivs = document.getElementsByClassName('doubles-char');
+    for (let i = 0; i < doublesCharDivs.length; i++) {
+      doublesCharDivs[i].classList.add('d-none');
+    }
+  }
+}
+
+const adjustFormWithRound = async (round) => {
   if (round === 'Grand Final' || round === 'Grand Final Reset') {
     if (round === 'Grand Final') {
       document.getElementById('player1LCheck').checked = false;
@@ -527,19 +654,9 @@ const fillMatchInfo = async (matchNode) => {
       lCheckDivs[i].style.display = 'none';
     }
   }
+}
 
-  resetScores();
-
-  if (player1Name in playerObj) {
-    loadPlayer1Character(playerObj[player1Name].char, playerObj[player1Name].skin);
-  }
-
-  if (player2Name in playerObj) {
-    loadPlayer2Character(playerObj[player2Name].char, playerObj[player2Name].skin);
-  }
-};
-
-const clearDetails = async () => {
+const clearForm = async () => {
   document.getElementById('tournamentName').value = '';
   document.getElementById('eventName').value = '';
   document.getElementById('round').value = '';
@@ -552,27 +669,9 @@ const clearDetails = async () => {
     lCheckDivs[i].firstElementChild.checked = false;
     lCheckDivs[i].style.display = 'none';
   }
-};
 
-const copySetToClipboard = async () => {
-  const player1Char = document.getElementById('player1Char').value;
-  const player2Char = document.getElementById('player2Char').value;
-  const player1Name = document.getElementById('player1Name').value;
-  const player2Name = document.getElementById('player2Name').value;
-  const round = document.getElementById('round').value;
-
-  const text = `${player1Name} (${player1Char}) vs. ${player2Name} (${player2Char}) - ${round}`;
-  navigator.clipboard.writeText(text);
-};
-
-const clearPlayers = async () => {
-  resetScores();
-
-  document.getElementById('player1LCheck').checked = false;
-  document.getElementById('player2LCheck').checked = false;
-
-  document.getElementById('player1Name').value = '';
-  document.getElementById('player2Name').value = '';
+  clearPlayers();
+  clearCommentators();
 };
 
 const setPlayer1Colour = async (hex) => {
@@ -588,6 +687,10 @@ const setPlayer1Colour = async (hex) => {
   player1ColourBtn.appendChild(colourRect);
 
   document.getElementById('player1Colour').value = hex;
+  let player1CharImgs = document.getElementsByClassName('img-player-1-char');
+  for (let i = 0; i < player1CharImgs.length; i++) {
+    player1CharImgs[i].style.backgroundColor = hex;
+  }
 };
 
 const setPlayer2Colour = async (hex) => {
@@ -603,6 +706,10 @@ const setPlayer2Colour = async (hex) => {
   player2ColourBtn.appendChild(colourRect);
 
   document.getElementById('player2Colour').value = hex;
+  let player2CharImgs = document.getElementsByClassName('img-player-2-char');
+  for (let i = 0; i < player2CharImgs.length; i++) {
+    player2CharImgs[i].style.backgroundColor = hex;
+  }
 };
 
 const loadPlayer1ColourSet = async () => {
@@ -626,7 +733,7 @@ const loadPlayer1ColourSet = async () => {
     colourRect.style.backgroundColor = colourObj[i].hex;
 
     let colourName = document.createElement('div');
-    colourName.innerHTML = colourObj[i].name;
+    colourName.textContent = colourObj[i].name;
 
     p1ColourBtn.appendChild(colourRect);
     p1ColourBtn.appendChild(colourName);
@@ -661,7 +768,7 @@ const loadPlayer2ColourSet = async () => {
     colourRect.style.backgroundColor = colourObj[i].hex;
 
     let colourName = document.createElement('div');
-    colourName.innerHTML = colourObj[i].name;
+    colourName.textContent = colourObj[i].name;
 
     p2ColourBtn.appendChild(colourRect);
     p2ColourBtn.appendChild(colourName);
@@ -678,10 +785,14 @@ const loadPlayer2ColourSet = async () => {
 const loadCharacterList = async () => {
   const player1CharSS = document.getElementById('player1CharSS');
   const player2CharSS = document.getElementById('player2CharSS');
+  const player1Char2SS = document.getElementById('player1Char2SS');
+  const player2Char2SS = document.getElementById('player2Char2SS');
   player1CharSS.replaceChildren();
   player2CharSS.replaceChildren();
+  player1Char2SS.replaceChildren();
+  player2Char2SS.replaceChildren();
 
-  const characterList = await window.fsAPI.fetch.characterList();
+  characterList = await window.fsAPI.fetch.characterList();
   for (let i = 0; i < characterList.length; i++) {
     const characterSelectScreen = await window.fsAPI.fetch.characterSelectScreen(characterList[i]);
 
@@ -707,26 +818,58 @@ const loadCharacterList = async () => {
 
     p2CharSSDiv.appendChild(p2CharSSImg);
 
+    let p1Char2SSDiv = document.createElement('div');
+    p1Char2SSDiv.setAttribute('class', 'modal-char-select');
+
+    let p1Char2SSImg = document.createElement('img');
+    p1Char2SSImg.setAttribute('data-bs-dismiss', 'modal');
+    p1Char2SSImg.setAttribute('src', `data:image/png;base64,${characterSelectScreen}`);
+    p1Char2SSImg.setAttribute('alt', characterList[i]);
+    p1Char2SSImg.addEventListener('click', (event) => { loadPlayer1Character2(event.target.getAttribute('alt')) });
+
+    p1Char2SSDiv.appendChild(p1Char2SSImg);
+
+    let p2Char2SSDiv = document.createElement('div');
+    p2Char2SSDiv.setAttribute('class', 'modal-char-select');
+
+    let p2Char2SSImg = document.createElement('img');
+    p2Char2SSImg.setAttribute('data-bs-dismiss', 'modal');
+    p2Char2SSImg.setAttribute('src', `data:image/png;base64,${characterSelectScreen}`);
+    p2Char2SSImg.setAttribute('alt', characterList[i]);
+    p2Char2SSImg.addEventListener('click', (event) => { loadPlayer2Character2(event.target.getAttribute('alt')) });
+
+    p2Char2SSDiv.appendChild(p2Char2SSImg);
+
     player1CharSS.appendChild(p1CharSSDiv);
     player2CharSS.appendChild(p2CharSSDiv);
+    player1Char2SS.appendChild(p1Char2SSDiv);
+    player2Char2SS.appendChild(p2Char2SSDiv);
   }
 
   loadPlayer1Character(characterList[characterList.length - 1]);
   loadPlayer2Character(characterList[characterList.length - 1]);
+  loadPlayer1Character2(characterList[characterList.length - 1]);
+  loadPlayer2Character2(characterList[characterList.length - 1]);
 };
 
 const loadPlayer1Character = async (character, skin = '') => {
-  characterSelectScreen = await window.fsAPI.fetch.characterSelectScreen(character);
   document.getElementById('player1Char').value = character;
-  document.getElementById('player1CharSSImg').src = `data:image/png;base64,${characterSelectScreen}`;
   loadPlayer1CharacterIcons(character, skin);
 };
 
 const loadPlayer2Character = async (character, skin = '') => {
-  characterSelectScreen = await window.fsAPI.fetch.characterSelectScreen(character);
   document.getElementById('player2Char').value = character;
-  document.getElementById('player2CharSSImg').src = `data:image/png;base64,${characterSelectScreen}`;
   loadPlayer2CharacterIcons(character, skin);
+};
+
+const loadPlayer1Character2 = async (character, skin = '') => {
+  document.getElementById('player1Char2').value = character;
+  loadPlayer1Character2Icons(character, skin);
+};
+
+const loadPlayer2Character2 = async (character, skin = '') => {
+  document.getElementById('player2Char2').value = character;
+  loadPlayer2Character2Icons(character, skin);
 };
 
 const loadPlayer1CharacterIcons = async (character, skin = '') => {
@@ -747,7 +890,7 @@ const loadPlayer1CharacterIcons = async (character, skin = '') => {
     }
 
     let p1Label = document.createElement('label');
-    p1Label.setAttribute('class', 'btn btn-outline-danger btn-skin');
+    p1Label.setAttribute('class', 'btn btn-outline-danger btn-sm btn-skin');
     p1Label.setAttribute('for', 'player1Skin' + i);
 
     let p1Icon = document.createElement('img');
@@ -790,7 +933,7 @@ const loadPlayer2CharacterIcons = async (character, skin = '') => {
     }
 
     let p2Label = document.createElement('label');
-    p2Label.setAttribute('class', 'btn btn-outline-danger btn-skin');
+    p2Label.setAttribute('class', 'btn btn-outline-danger btn-sm btn-skin');
     p2Label.setAttribute('for', 'player2Skin' + i);
 
     let p2Icon = document.createElement('img');
@@ -815,6 +958,92 @@ const loadPlayer2CharacterIcons = async (character, skin = '') => {
   }
 };
 
+const loadPlayer1Character2Icons = async (character, skin = '') => {
+  const skinDiv = document.getElementById('player1Skin2Div');
+  skinDiv.replaceChildren();
+
+  const characterIcons = await window.fsAPI.fetch.characterIcons(character);
+  for (let i = 0; i < characterIcons.length; i++) {
+    let p1Input2 = document.createElement('input');
+    p1Input2.setAttribute('class', 'btn-check btn-player-1-skin-2');
+    p1Input2.setAttribute('type', 'radio');
+    p1Input2.setAttribute('name', 'player1Skin2');
+    p1Input2.setAttribute('id', `player1Skin2${i}`);
+    p1Input2.setAttribute('value', characterIcons[i].name);
+    p1Input2.setAttribute('autocomplete', 'off');
+    if (skin === characterIcons[i].name || i === 0) {
+      p1Input2.setAttribute('checked', '');
+    }
+
+    let p1Label2 = document.createElement('label');
+    p1Label2.setAttribute('class', 'btn btn-outline-danger btn-sm btn-skin');
+    p1Label2.setAttribute('for', 'player1Skin2' + i);
+
+    let p1Icon2 = document.createElement('img');
+    p1Icon2.setAttribute('src', `data:image/png;base64,${characterIcons[i].base64}`);
+    p1Icon2.setAttribute('alt', i);
+
+    p1Label2.appendChild(p1Icon2);
+
+    skinDiv.appendChild(p1Input2);
+    skinDiv.appendChild(p1Label2);
+  };
+
+  if (skin === '' && characterIcons.length) {
+    skin = document.querySelector('input[name="player1Skin2"]:checked').value;
+  }
+  loadPlayer1Character2Render(character, skin);
+  let player1Skin2Btns = document.getElementsByClassName('btn-player-1-skin-2');
+  for (let i = 0; i < player1Skin2Btns.length; i++) {
+    player1Skin2Btns[i].addEventListener('click', (event) => {
+      loadPlayer1Character2Render(document.getElementById('player1Char2').value, event.target.value);
+    });
+  }
+};
+
+const loadPlayer2Character2Icons = async (character, skin = '') => {
+  const skinDiv = document.getElementById('player2Skin2Div');
+  skinDiv.replaceChildren();
+
+  const characterIcons = await window.fsAPI.fetch.characterIcons(character);
+  for (let i = 0; i < characterIcons.length; i++) {
+    let p2Input2 = document.createElement('input');
+    p2Input2.setAttribute('class', 'btn-check btn-player-2-skin-2');
+    p2Input2.setAttribute('type', 'radio');
+    p2Input2.setAttribute('name', 'player2Skin2');
+    p2Input2.setAttribute('id', `player2Skin2${i}`);
+    p2Input2.setAttribute('value', characterIcons[i].name);
+    p2Input2.setAttribute('autocomplete', 'off');
+    if (skin === characterIcons[i].name || i === 0) {
+      p2Input2.setAttribute('checked', '');
+    }
+
+    let p2Label2 = document.createElement('label');
+    p2Label2.setAttribute('class', 'btn btn-outline-danger btn-sm btn-skin');
+    p2Label2.setAttribute('for', 'player2Skin2' + i);
+
+    let p2Icon2 = document.createElement('img');
+    p2Icon2.setAttribute('src', `data:image/png;base64,${characterIcons[i].base64}`);
+    p2Icon2.setAttribute('alt', i);
+
+    p2Label2.appendChild(p2Icon2);
+
+    skinDiv.appendChild(p2Input2);
+    skinDiv.appendChild(p2Label2);
+  };
+
+  if (skin === '' && characterIcons.length) {
+    skin = document.querySelector('input[name="player2Skin2"]:checked').value;
+  }
+  loadPlayer2Character2Render(character, skin);
+  let player2Skin2Btns = document.getElementsByClassName('btn-player-2-skin-2');
+  for (let i = 0; i < player2Skin2Btns.length; i++) {
+    player2Skin2Btns[i].addEventListener('click', (event) => {
+      loadPlayer2Character2Render(document.getElementById('player2Char2').value, event.target.value);
+    });
+  }
+};
+
 const loadPlayer1CharacterRender = async (character, skin) => {
   const characterRender = await window.fsAPI.fetch.characterRender(character, skin);
   document.getElementById('player1SkinRenderImg').setAttribute('src', `data:image/png;base64,${characterRender}`);
@@ -823,6 +1052,16 @@ const loadPlayer1CharacterRender = async (character, skin) => {
 const loadPlayer2CharacterRender = async (character, skin) => {
   const characterRender = await window.fsAPI.fetch.characterRender(character, skin);
   document.getElementById('player2SkinRenderImg').setAttribute('src', `data:image/png;base64,${characterRender}`);
+};
+
+const loadPlayer1Character2Render = async (character, skin) => {
+  const characterRender = await window.fsAPI.fetch.characterRender(character, skin);
+  document.getElementById('player1Skin2RenderImg').setAttribute('src', `data:image/png;base64,${characterRender}`);
+};
+
+const loadPlayer2Character2Render = async (character, skin) => {
+  const characterRender = await window.fsAPI.fetch.characterRender(character, skin);
+  document.getElementById('player2Skin2RenderImg').setAttribute('src', `data:image/png;base64,${characterRender}`);
 };
 
 const loadPlayerObj = async () => {
@@ -860,15 +1099,16 @@ const swapPlayers = async () => {
 
   const player1Char = document.getElementById('player1Char').value;
   const player2Char = document.getElementById('player2Char').value;
-
-  const player1CharSSImg = document.getElementById('player1CharSSImg').src;
-  const player2CharSSImg = document.getElementById('player2CharSSImg').src;
+  const player1Char2 = document.getElementById('player1Char2').value;
+  const player2Char2 = document.getElementById('player2Char2').value;
 
   const player1Name = document.getElementById('player1Name').value;
   const player2Name = document.getElementById('player2Name').value;
 
   const player1Skin = document.querySelector('input[name="player1Skin"]:checked') ? document.querySelector('input[name="player1Skin"]:checked').value : '';
   const player2Skin = document.querySelector('input[name="player2Skin"]:checked') ? document.querySelector('input[name="player2Skin"]:checked').value : '';
+  const player1Skin2 = document.querySelector('input[name="player1Skin2"]:checked') ? document.querySelector('input[name="player1Skin2"]:checked').value : '';
+  const player2Skin2 = document.querySelector('input[name="player2Skin2"]:checked') ? document.querySelector('input[name="player2Skin2"]:checked').value : '';
 
   document.getElementById('player1Score').value = player2Score;
   document.getElementById('player2Score').value = player1Score;
@@ -878,15 +1118,53 @@ const swapPlayers = async () => {
 
   document.getElementById('player1Char').value = player2Char;
   document.getElementById('player2Char').value = player1Char;
-
-  document.getElementById('player1CharSSImg').src = player2CharSSImg;
-  document.getElementById('player2CharSSImg').src = player1CharSSImg;
+  document.getElementById('player1Char2').value = player2Char2;
+  document.getElementById('player2Char2').value = player1Char2;
 
   document.getElementById('player1Name').value = player2Name;
   document.getElementById('player2Name').value = player1Name;
 
   loadPlayer1CharacterIcons(player2Char, player2Skin);
   loadPlayer2CharacterIcons(player1Char, player1Skin);
+  loadPlayer1Character2Icons(player2Char2, player2Skin2);
+  loadPlayer2Character2Icons(player1Char2, player1Skin2);
+};
+
+const clearPlayers = async () => {
+  resetScores();
+
+  document.getElementById('player1LCheck').checked = false;
+  document.getElementById('player2LCheck').checked = false;
+
+  document.getElementById('player1Name').value = '';
+  document.getElementById('player2Name').value = '';
+
+  loadPlayer1Character(characterList[characterList.length - 1]);
+  loadPlayer2Character(characterList[characterList.length - 1]);
+  loadPlayer1Character2(characterList[characterList.length - 1]);
+  loadPlayer2Character2(characterList[characterList.length - 1]);
+};
+
+const copySetToClipboard = async () => {
+  let text = "";
+
+  const player1Char = document.getElementById('player1Char').value;
+  const player2Char = document.getElementById('player2Char').value;
+  const player1Name = document.getElementById('player1Name').value;
+  const player2Name = document.getElementById('player2Name').value;
+  const round = document.getElementById('round').value;
+
+  const event = document.getElementById('eventName').value;
+  if (event.endsWith('Doubles')) {
+    const player1Char2 = document.getElementById('player1Char2').value;
+    const player2Char2 = document.getElementById('player2Char2').value;
+
+    text = `${player1Name} (${player1Char} / ${player1Char2}) vs. ${player2Name} (${player2Char} / ${player2Char2}) - ${round}`;
+  } else {
+    text = `${player1Name} (${player1Char}) vs. ${player2Name} (${player2Char}) - ${round}`;
+  }
+
+  navigator.clipboard.writeText(text);
 };
 
 const clearCommentators = async () => {
@@ -911,7 +1189,10 @@ const validatePlayerObj = async (newPlayerObj) => {
     }
 
     let infoKeys = Object.keys(info);
-    if (infoKeys.length !== 2 || !(infoKeys.includes('char') && infoKeys.includes('skin'))) {
+    if (
+      (infoKeys.length !== 2 || !(infoKeys.includes('char') && infoKeys.includes('skin'))) ||
+      (infoKeys.length !== 4 || !(infoKeys.includes('char') && infoKeys.includes('skin') && infoKeys.includes('char2') && infoKeys.includes('skin2')))
+    ) {
       throw 'Invalid Player Object';
     }
   }
@@ -935,20 +1216,34 @@ const editPlayerObj = async (newPlayerObj) => {
 };
 
 const updatePlayerObj = async (infoObj) => {
-  let player1Name = infoObj['player1Name'];
+  let player1Name = infoObj['player1Name'].trim();
   let player1Char = infoObj['player1Char'];
   let player1Skin = infoObj['player1Skin'];
+  let player1Char2 = infoObj['player1Char2'];
+  let player1Skin2 = infoObj['player1Skin2'];
 
-  if (player1Name.trim() !== '') {
+  if (player1Name !== '') {
     playerObj[player1Name] = { char: player1Char, skin: player1Skin };
+
+    if (player1Char2 && player1Skin2) {
+      playerObj[player1Name]['char2'] = player1Char2;
+      playerObj[player1Name]['skin2'] = player1Skin2;
+    }
   }
 
-  let player2Name = infoObj['player2Name'];
+  let player2Name = infoObj['player2Name'].trim();
   let player2Char = infoObj['player2Char'];
   let player2Skin = infoObj['player2Skin'];
+  let player2Char2 = infoObj['player2Char2'];
+  let player2Skin2 = infoObj['player2Skin2'];
 
-  if (player2Name.trim() !== '') {
+  if (player2Name !== '') {
     playerObj[player2Name] = { char: player2Char, skin: player2Skin };
+
+    if (player2Char2 && player2Skin2) {
+      playerObj[player2Name]['char2'] = player2Char2;
+      playerObj[player2Name]['skin2'] = player2Skin2;
+    }
   }
 
   const playerListDatalist = document.getElementById('playerList');
@@ -984,84 +1279,74 @@ loadPlayerObj();
 
 // Set listeners
 
-document.getElementById('apiTokenInput').addEventListener('input', (event) => {
-  fillAPIToken(event.target.value);
-});
-
-document.getElementById('tournamentForm').addEventListener('submit', (event) => {
-  event.preventDefault();
-
-  event.target.querySelector('button[type="submit"]').disabled = true;
-
-  document.getElementById('setPhases').innerHTML = '';
-  document.getElementById('setPhaseGroup').innerHTML = '';
-
-  const formData = new FormData(event.target);
-  const serializedInfo = Object.fromEntries(formData.entries());
-  if (!serializedInfo['tournamentURL'].startsWith('https://www.start.gg/tournament/')) {
-    const toast = new bootstrap.Toast(document.getElementById('parseURLFailToast'));
-    toast.show();
-
-    event.target.querySelector('button[type="submit"]').disabled = false;
-    return;
+document.getElementById('offcanvasSGGSets').addEventListener('show.bs.offcanvas', () => {
+  const eventId = document.getElementById('event').value;
+  const apiToken = document.getElementById('apiToken').value;
+  if (eventId && apiToken) {
+    populateSets(eventId, apiToken);
   }
-  const url = new URL(serializedInfo['tournamentURL']);
-  const slug = url.pathname.split('/')[2];
-  const apiToken = serializedInfo['apiToken'];
-
-  populateEvents(slug, apiToken);
-  event.target.querySelector('button[type="submit"]').disabled = false;
 });
 
-document.getElementById('refreshEvents').addEventListener('click', () => {
-  document.getElementById('findFormBtn').click();
+document.getElementById('apiTokenSaveBtn').addEventListener('click', () => {
+  document.getElementById('event').replaceChildren();
+  document.getElementById('setPhases').replaceChildren();
+  document.getElementById('setPhaseGroup').replaceChildren();
+  document.getElementById('setSelector').classList.add('d-none');
+  document.getElementById('setNotice').classList.remove('d-none');
+
+  const apiToken = document.getElementById('apiToken').value;
+  populateTournaments(apiToken);
+
+  // Save API token on form save (does not have to be valid token)
+  window.fsAPI.fetch.settingsObj()
+    .then(settingsObj => {
+      settingsObj['api.token'] = apiToken;
+      window.fsAPI.save.settingsObj(settingsObj);
+    });
 });
 
-document.getElementById('event').addEventListener('change', () => {
-  document.getElementById('fetchFormBtn').click();
+document.getElementById('tournament').addEventListener('change', (event) => {
+  document.getElementById('setPhases').replaceChildren();
+  document.getElementById('setPhaseGroup').replaceChildren();
+  document.getElementById('setSelector').classList.add('d-none');
+  document.getElementById('setNotice').classList.remove('d-none');
+
+  const tournamentId = event.target.value;
+  const apiToken = document.getElementById('apiToken').value;
+  populateEvents(tournamentId, apiToken);
+
+  const tournamentName = event.target.options[event.target.selectedIndex].text;
+  document.getElementById('tournamentName').value = tournamentName;
 });
 
-document.getElementById('eventForm').addEventListener('submit', (event) => {
-  event.preventDefault();
+document.getElementById('event').addEventListener('change', (event) => {
+  const eventId = event.target.value;
+  const apiToken = document.getElementById('apiToken').value;
+  populateSets(eventId, apiToken)
+    .then(() => {
+      const toast = new bootstrap.Toast(document.getElementById('loadSetsSuccessToast'));
+      toast.show();
+    });
 
-  const formData = new FormData(event.target);
-  const serializedInfo = Object.fromEntries(formData.entries());
-  const eventId = serializedInfo['event'];
-  const apiToken = serializedInfo['apiToken'];
-
-  populateSets(eventId, apiToken);
+  const eventName = event.target.options[event.target.selectedIndex].text;
+  document.getElementById('eventName').value = eventName;
+  adjustFormWithEvent(eventName);
 });
 
-document.getElementById('refreshSets').addEventListener('click', () => {
-  document.getElementById('fetchFormBtn').click();
+document.getElementById('eventName').addEventListener('change', (event) => {
+  adjustFormWithEvent(event.target.value);
 });
 
-document.getElementById('clearDetails').addEventListener('click', () => {
-  clearDetails();
+document.getElementById('round').addEventListener('change', (event) => {
+  adjustFormWithRound(event.target.value);
+});
+
+document.getElementById('clearForm').addEventListener('click', () => {
+  clearForm();
 });
 
 document.getElementById('refreshAssets').addEventListener('click', () => {
   loadCharacterList();
-});
-
-document.getElementById('copySet').addEventListener('click', (event) => {
-  copySetToClipboard()
-    .then(() => {
-      const btnTarget = event.currentTarget;
-      btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-check.svg');
-      setTimeout(() => {
-        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard.svg');
-      }, 1000);
-    })
-    .catch(err => {
-      console.log(err);
-      const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
-      toast.show();
-    });
-});
-
-document.getElementById('clearPlayers').addEventListener('click', () => {
-  clearPlayers();
 });
 
 document.getElementById('player1Name').addEventListener('input', (event) => {
@@ -1084,8 +1369,24 @@ document.getElementById('swapPlayers').addEventListener('click', () => {
   swapPlayers();
 });
 
-document.getElementById('clearCommentators').addEventListener('click', () => {
-  clearCommentators();
+document.getElementById('clearPlayers').addEventListener('click', () => {
+  clearPlayers();
+});
+
+document.getElementById('copySet').addEventListener('click', (event) => {
+  copySetToClipboard()
+    .then(() => {
+      const btnTarget = event.currentTarget;
+      btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-check.svg');
+      setTimeout(() => {
+        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard.svg');
+      }, 1000);
+    })
+    .catch(err => {
+      console.log(err);
+      const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
+      toast.show();
+    });
 });
 
 document.getElementById('swapCommentators').addEventListener('click', () => {
@@ -1104,7 +1405,7 @@ document.getElementById('bracketForm').addEventListener('submit', (event) => {
   saveInfoObj(serializedInfo);
 });
 
-document.getElementById('offcanvasPlayers').addEventListener('show.bs.offcanvas', () => {
+document.getElementById('offcanvasSettings').addEventListener('show.bs.offcanvas', () => {
   document.getElementById('editPlayersJSON').value = JSON.stringify(playerObj, null, 2);
 });
 
@@ -1116,7 +1417,6 @@ document.getElementById('playersForm').addEventListener('submit', (event) => {
   validatePlayerObj(serializedInfo['editPlayersJSON'])
     .then(newPlayerJSON => editPlayerObj(newPlayerJSON))
     .then(() => {
-      document.getElementById('offCanvasPlayersBtn').click();
       const toast = new bootstrap.Toast(document.getElementById('savePlayerInfoSuccessToast'));
       toast.show();
     })
@@ -1145,10 +1445,4 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 Mousetrap.bind(['1'], () => { incrementP1Score() });
 Mousetrap.bind(['2'], () => { incrementP2Score() });
 Mousetrap.bind(['esc'], () => { resetScores() });
-Mousetrap.bind(['mod+1'], () => { document.getElementById('tournamentURLCard').scrollIntoView() });
-Mousetrap.bind(['mod+2'], () => { document.getElementById('eventCard').scrollIntoView() });
-Mousetrap.bind(['mod+3'], () => { document.getElementById('setsCard').scrollIntoView() });
-Mousetrap.bind(['mod+4'], () => { document.getElementById('detailsCard').scrollIntoView() });
-Mousetrap.bind(['mod+5'], () => { document.getElementById('playerCard').scrollIntoView() });
-Mousetrap.bind(['mod+6'], () => { document.getElementById('commentatorCard').scrollIntoView() });
 Mousetrap.bind(['enter'], () => { if (document.activeElement.tagName === 'BODY') document.getElementById('submitFormBtn').click(); });
