@@ -1190,7 +1190,7 @@ const validatePlayerObj = async (newPlayerObj) => {
 
     let infoKeys = Object.keys(info);
     if (
-      (infoKeys.length !== 2 || !(infoKeys.includes('char') && infoKeys.includes('skin'))) ||
+      (infoKeys.length !== 2 || !(infoKeys.includes('char') && infoKeys.includes('skin'))) &&
       (infoKeys.length !== 4 || !(infoKeys.includes('char') && infoKeys.includes('skin') && infoKeys.includes('char2') && infoKeys.includes('skin2')))
     ) {
       throw 'Invalid Player Object';
@@ -1352,12 +1352,18 @@ document.getElementById('refreshAssets').addEventListener('click', () => {
 document.getElementById('player1Name').addEventListener('input', (event) => {
   if (event.target.value in playerObj) {
     loadPlayer1Character(playerObj[event.target.value].char, playerObj[event.target.value].skin);
+    if (playerObj[event.target.value].char2 && playerObj[event.target.value].skin2) {
+      loadPlayer1Character2(playerObj[event.target.value].char2, playerObj[event.target.value].skin2);
+    }
   }
 });
 
 document.getElementById('player2Name').addEventListener('input', (event) => {
   if (event.target.value in playerObj) {
     loadPlayer2Character(playerObj[event.target.value].char, playerObj[event.target.value].skin);
+    if (playerObj[event.target.value].char2 && playerObj[event.target.value].skin2) {
+      loadPlayer2Character2(playerObj[event.target.value].char2, playerObj[event.target.value].skin2);
+    }
   }
 });
 
@@ -1396,6 +1402,14 @@ document.getElementById('swapCommentators').addEventListener('click', () => {
 document.getElementById('bracketForm').addEventListener('submit', (event) => {
   event.preventDefault();
   const formData = new FormData(event.target);
+  let hiddenFormDivs = event.target.getElementsByClassName('d-none');
+  for (let i = 0; i < hiddenFormDivs.length; i++) {
+    let hiddenFormInputs = hiddenFormDivs[i].getElementsByTagName('input');
+    for (let j = 0; j < hiddenFormInputs.length; j++) {
+      formData.delete(hiddenFormInputs[j].name);
+    }
+  }
+
   const serializedInfo = Object.fromEntries(formData.entries());
   serializedInfo['bestOf'] = serializedInfo['bestOf'] + ' ' + serializedInfo['bestOfNum'];
   serializedInfo['player1LCheck'] = !(formData.get('player1LCheck') === null);
