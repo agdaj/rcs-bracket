@@ -171,10 +171,10 @@ const querySets = async (eventId, page, perPage, apiToken) => {
             id
             fullRoundText
             phaseGroup {
-                displayIdentifier
-                phase {
-                    name
-                }
+              displayIdentifier
+              phase {
+                name
+              }
             }
             identifier
             slots {
@@ -439,8 +439,9 @@ const populateSets = async (eventId, apiToken) => {
   setIdObj = {};
   document.getElementById('setPhases').replaceChildren();
   document.getElementById('setPhaseGroup').replaceChildren();
-  document.getElementById('setSelector').classList.remove('d-none');
   document.getElementById('setNotice').classList.add('d-none');
+  document.getElementById('setMeta').classList.remove('d-none');
+  document.getElementById('setSelector').classList.remove('d-none');
   document.getElementById('spinnerSGG').classList.remove('d-none');
 
   return querySetCount(eventId, apiToken)
@@ -586,8 +587,9 @@ const populateSets = async (eventId, apiToken) => {
       const toast = new bootstrap.Toast(document.getElementById('findSetsFailToast'));
       toast.show();
 
-      document.getElementById('setSelector').classList.add('d-none');
       document.getElementById('setNotice').classList.remove('d-none');
+      document.getElementById('setMeta').classList.add('d-none');
+      document.getElementById('setSelector').classList.add('d-none');
       document.getElementById('spinnerSGG').classList.add('d-none');
     })
 };
@@ -1291,8 +1293,9 @@ document.getElementById('apiTokenSaveBtn').addEventListener('click', () => {
   document.getElementById('event').replaceChildren();
   document.getElementById('setPhases').replaceChildren();
   document.getElementById('setPhaseGroup').replaceChildren();
-  document.getElementById('setSelector').classList.add('d-none');
   document.getElementById('setNotice').classList.remove('d-none');
+  document.getElementById('setMeta').classList.add('d-none');
+  document.getElementById('setSelector').classList.add('d-none');
 
   const apiToken = document.getElementById('apiToken').value;
   populateTournaments(apiToken);
@@ -1308,8 +1311,9 @@ document.getElementById('apiTokenSaveBtn').addEventListener('click', () => {
 document.getElementById('tournament').addEventListener('change', (event) => {
   document.getElementById('setPhases').replaceChildren();
   document.getElementById('setPhaseGroup').replaceChildren();
-  document.getElementById('setSelector').classList.add('d-none');
   document.getElementById('setNotice').classList.remove('d-none');
+  document.getElementById('setMeta').classList.add('d-none');
+  document.getElementById('setSelector').classList.add('d-none');
 
   const tournamentId = event.target.value;
   const apiToken = document.getElementById('apiToken').value;
@@ -1331,6 +1335,14 @@ document.getElementById('event').addEventListener('change', (event) => {
   const eventName = event.target.options[event.target.selectedIndex].text;
   document.getElementById('eventName').value = eventName;
   adjustFormWithEvent(eventName);
+});
+
+document.getElementById('refreshSets').addEventListener('click', () => {
+  const eventId = document.getElementById('event').value;
+  const apiToken = document.getElementById('apiToken').value;
+  if (eventId && apiToken) {
+    populateSets(eventId, apiToken);
+  }
 });
 
 document.getElementById('eventName').addEventListener('change', (event) => {

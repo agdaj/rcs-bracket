@@ -341,23 +341,29 @@
               <span class="input-group-text"><img src="assets/images/svg/controller.svg" alt="Controller SVG"></span>
               <select class="form-select" name="event" id="event" aria-label="Event select"></select>
             </div>
-            <div class="row mb-3">
-              <div class="col text-center">
-              </div>
-            </div>
           </div>
           <div class="tab-pane fade" id="sets-tab-pane" role="tabpanel" aria-labelledby="sets-tab" tabindex="0">
+            <div class="row mb-3" id="setNotice">
+              <div class="col">
+                <p class="text-center text-muted"><em>Enter start.gg API token and select tournament + event under the <strong>Info</strong> tab to populate sets</em></p>
+              </div>
+            </div>
+            <div class="row mb-3 d-none" id="setMeta">
+              <div class="col-10">
+                <select class="form-select form-select-sm" name="setExtent" id="setExtent" aria-label="Set Extent">
+                  <option selected>Sets by Phase - Group</option>
+                </select>
+              </div>
+              <div class="col-2">
+                <button class="btn btn-outline-secondary btn-sm" type="button" id="refreshSets" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Refresh Sets"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
+              </div>
+            </div>
             <div class="row g-0 d-none" id="setSelector">
               <div class="col-5">
                 <ul class="nav nav-pills" id="setPhases" role="tablist" aria-orientation="vertical"></ul>
               </div>
               <div class="col-7">
                 <div class="tab-content" id="setPhaseGroup"></div>
-              </div>
-            </div>
-            <div class="row" id="setNotice">
-              <div class="col">
-                <p class="text-center text-muted"><em>Enter start.gg API token and select tournament + event under the <strong>Info</strong> tab to populate sets</em></p>
               </div>
             </div>
           </div>
