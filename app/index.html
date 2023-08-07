@@ -352,6 +352,7 @@
               <div class="col-10">
                 <select class="form-select form-select-sm" name="setExtent" id="setExtent" aria-label="Set Extent">
                   <option selected>Sets by Phase - Group</option>
+                  <option>Sets by Stream Queue</option>
                 </select>
               </div>
               <div class="col-2">
@@ -360,10 +361,18 @@
             </div>
             <div class="row g-0 d-none" id="setSelector">
               <div class="col-5">
-                <ul class="nav nav-pills" id="setPhases" role="tablist" aria-orientation="vertical"></ul>
+                <ul class="nav nav-pills text-center" id="setPhases" role="tablist" aria-orientation="vertical"></ul>
               </div>
               <div class="col-7">
                 <div class="tab-content" id="setPhaseGroup"></div>
+              </div>
+            </div>
+            <div class="row g-0 d-none" id="setStreamSelector">
+              <div class="col-5">
+                <ul class="nav nav-pills text-center" id="setStreams" role="tablist" aria-orientation="vertical"></ul>
+              </div>
+              <div class="col-7">
+                <div class="tab-content" id="setStreamGroup"></div>
               </div>
             </div>
           </div>

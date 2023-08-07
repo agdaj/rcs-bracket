@@ -46,6 +46,8 @@ const colourObj = [
 
 let characterList = [];
 
+let tournamentId = null;
+let streamObj = {};
 let setIdObj = {};
 let playerObj = {};
 
@@ -201,6 +203,34 @@ const querySets = async (eventId, page, perPage, apiToken) => {
     }
   `;
   const variables = {'eventId': eventId, 'page': page, 'perPage': perPage};
+  const data = {'query': query, 'variables': variables};
+
+  return fetch('https://api.start.gg/gql/alpha', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+const queryStreamQueue = async (tournamentId, apiToken) => {
+  const query = `
+    query StreamQueueQuery($tournamentId: ID!) {
+      tournament(id: $tournamentId) {
+        streamQueue {
+          sets {
+            id
+          }
+          stream {
+            streamName
+            streamSource
+          }
+        }
+      }
+    }
+  `;
+  const variables = {'tournamentId': tournamentId};
   const data = {'query': query, 'variables': variables};
 
   return fetch('https://api.start.gg/gql/alpha', {
@@ -436,12 +466,20 @@ const populateEvents = async (tournamentId, apiToken) => {
 };
 
 const populateSets = async (eventId, apiToken) => {
+  streamObj = {};
   setIdObj = {};
   document.getElementById('setPhases').replaceChildren();
   document.getElementById('setPhaseGroup').replaceChildren();
+  document.getElementById('setStreams').replaceChildren();
+  document.getElementById('setStreamGroup').replaceChildren();
   document.getElementById('setNotice').classList.add('d-none');
   document.getElementById('setMeta').classList.remove('d-none');
-  document.getElementById('setSelector').classList.remove('d-none');
+  let setExtent = document.getElementById('setExtent').value;
+  if (setExtent === 'Sets by Phase - Group') {
+    document.getElementById('setSelector').classList.remove('d-none');
+  } else if (setExtent === 'Sets by Stream Queue') {
+    document.getElementById('setStreamSelector').classList.remove('d-none');
+  }
   document.getElementById('spinnerSGG').classList.remove('d-none');
 
   return querySetCount(eventId, apiToken)
@@ -496,6 +534,7 @@ const populateSets = async (eventId, apiToken) => {
           let phaseNav = document.createElement("li");
           phaseNav.classList.add("nav-item");
           phaseNav.setAttribute('role', 'presentation');
+          phaseNav.style.width = '100%';
 
           let phaseLink = document.createElement("a");
           phaseLink.classList.add('nav-link');
@@ -579,6 +618,141 @@ const populateSets = async (eventId, apiToken) => {
           }
         });
       });
+    })
+    .then(() => queryStreamQueue(tournamentId, apiToken))
+    .then(response => response.json())
+    .then(response => {
+      if (response['data']['tournament']['streamQueue'] === null) {
+        response['data']['tournament']['streamQueue'] = [];
+      }
+
+      response['data']['tournament']['streamQueue'].forEach(node => {
+        let streamName = node['stream']['streamName'];
+        let streamSource = node['stream']['streamSource'];
+
+        streamObj[streamName] = {
+          'source': streamSource,
+          'sets': []
+        };
+
+        node['sets'].forEach(setNode => {
+          streamObj[streamName]['sets'].push(setNode['id']);
+        });
+      })
+
+      let setActive = false;
+      Object.entries(streamObj).forEach(([streamName, streamInfoObj]) => {
+        let streamLabel = document.createElement("span");
+        let streamSource = streamInfoObj['source'];
+        if (streamSource === 'TWITCH') {
+          let streamSVG = document.createElement('img');
+          streamSVG.classList.add('btn-close-white');
+          streamSVG.setAttribute('src', 'assets/images/svg/twitch.svg');
+          streamLabel.appendChild(streamSVG);
+        } else {
+          let streamSVG = document.createElement('img');
+          streamSVG.classList.add('btn-close-white');
+          streamSVG.setAttribute('src', 'assets/images/svg/headset.svg');
+          streamLabel.appendChild(streamSVG);
+        }
+        streamLabel.appendChild(document.createTextNode(" " + streamName));
+
+        let navId = 'phase-nav-' + streamName;
+        let contentId = 'phase-content-' + streamName;
+
+        let streamNav = document.createElement("li");
+        streamNav.classList.add("nav-item");
+        streamNav.setAttribute('role', 'presentation');
+        streamNav.style.width = '100%';
+        streamNav.style.whiteSpace = 'nowrap';
+
+        let streamLink = document.createElement("a");
+        streamLink.classList.add('nav-link');
+        streamLink.style.overflow = 'scroll';
+        streamLink.setAttribute('id', navId);
+        streamLink.setAttribute('data-bs-toggle', 'pill');
+        streamLink.setAttribute('data-bs-target', '#' + contentId);
+        streamLink.setAttribute('type', 'button');
+        streamLink.setAttribute('role', 'tab');
+        streamLink.setAttribute('aria-controls', contentId);
+        streamLink.setAttribute('aria-selected', 'false');
+        streamLink.appendChild(streamLabel);
+        if (!setActive) {
+          streamLink.classList.add('active');
+          streamLink.setAttribute('aria-selected', 'true');
+        }
+        streamNav.appendChild(streamLink);
+
+        let streamContent = document.createElement('div');
+        streamContent.classList.add('tab-pane', 'fade');
+        streamContent.setAttribute('id', contentId);
+        streamContent.setAttribute('role', 'tabpanel');
+        streamContent.setAttribute('aria-labelledby', navId);
+        streamContent.setAttribute('tab-index', '0');
+        if (!setActive) {
+          streamContent.classList.add('show', 'active');
+          streamContent.setAttribute('aria-selected', 'true');
+        }
+
+        let setRowContent = document.createElement('div');
+        setRowContent.classList.add('row', 'bracket-phase');
+        Object.values(streamInfoObj['sets']).forEach((setId) => {
+          if (!(setId in setIdObj)) {
+            return;
+          }
+
+          let setNode = setIdObj[setId];
+
+          if (setNode.slots[0].entrant === null || setNode.slots[1].entrant === null) {
+            return;
+          }
+
+          let setContent = document.createElement('div');
+          setContent.classList.add('col', 'mb-3', 'bracket-public');
+
+          let roundHeader = document.createElement('div');
+          roundHeader.classList.add('round-header');
+          let roundRoot = document.createElement('div');
+          roundRoot.classList.add('round-root');
+          let roundDiv = document.createElement('div');
+          let roundTitleContainer = document.createElement('div');
+          roundTitleContainer.classList.add('round-title-container');
+          let roundTitle = document.createElement('div');
+          roundTitle.classList.add('round-title');
+          roundTitle.innerText = setNode['fullRoundText'];
+
+          roundTitleContainer.appendChild(roundTitle);
+          roundDiv.appendChild(roundTitleContainer);
+          roundRoot.appendChild(roundDiv);
+          roundHeader.appendChild(roundRoot);
+          setContent.appendChild(roundHeader);
+
+          let matchNode = createMatch(setNode);
+          matchNode.addEventListener('click', (event) => {
+            let setId = event.currentTarget.getAttribute('data-set-id');
+            fillMatchInfo(setIdObj[setId])
+              .then(() => {
+                document.getElementById('offcanvasSGGSetsBtn').click();
+              })
+              .catch(err => {
+                console.log(err);
+                const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
+                toast.show();
+              });
+          });
+          setContent.appendChild(matchNode);
+
+          setRowContent.appendChild(setContent);
+        });
+        streamContent.appendChild(setRowContent);
+
+        document.getElementById('setStreams').appendChild(streamNav);
+        document.getElementById('setStreamGroup').appendChild(streamContent);
+
+        if (!setActive) {
+          setActive = true;
+        }
+      });
 
       document.getElementById('spinnerSGG').classList.add('d-none');
     })
@@ -590,6 +764,7 @@ const populateSets = async (eventId, apiToken) => {
       document.getElementById('setNotice').classList.remove('d-none');
       document.getElementById('setMeta').classList.add('d-none');
       document.getElementById('setSelector').classList.add('d-none');
+      document.getElementById('setStreamSelector').classList.add('d-none');
       document.getElementById('spinnerSGG').classList.add('d-none');
     })
 };
@@ -1293,9 +1468,12 @@ document.getElementById('apiTokenSaveBtn').addEventListener('click', () => {
   document.getElementById('event').replaceChildren();
   document.getElementById('setPhases').replaceChildren();
   document.getElementById('setPhaseGroup').replaceChildren();
+  document.getElementById('setStreams').replaceChildren();
+  document.getElementById('setStreamGroup').replaceChildren();
   document.getElementById('setNotice').classList.remove('d-none');
   document.getElementById('setMeta').classList.add('d-none');
   document.getElementById('setSelector').classList.add('d-none');
+  document.getElementById('setStreamSelector').classList.add('d-none');
 
   const apiToken = document.getElementById('apiToken').value;
   populateTournaments(apiToken);
@@ -1311,11 +1489,14 @@ document.getElementById('apiTokenSaveBtn').addEventListener('click', () => {
 document.getElementById('tournament').addEventListener('change', (event) => {
   document.getElementById('setPhases').replaceChildren();
   document.getElementById('setPhaseGroup').replaceChildren();
+  document.getElementById('setStreams').replaceChildren();
+  document.getElementById('setStreamGroup').replaceChildren();
   document.getElementById('setNotice').classList.remove('d-none');
   document.getElementById('setMeta').classList.add('d-none');
   document.getElementById('setSelector').classList.add('d-none');
+  document.getElementById('setStreamSelector').classList.add('d-none');
 
-  const tournamentId = event.target.value;
+  tournamentId = event.target.value;
   const apiToken = document.getElementById('apiToken').value;
   populateEvents(tournamentId, apiToken);
 
@@ -1335,6 +1516,17 @@ document.getElementById('event').addEventListener('change', (event) => {
   const eventName = event.target.options[event.target.selectedIndex].text;
   document.getElementById('eventName').value = eventName;
   adjustFormWithEvent(eventName);
+});
+
+document.getElementById('setExtent').addEventListener('change', (event) => {
+  let setExtent = event.target.value;
+  if (setExtent === 'Sets by Phase - Group') {
+    document.getElementById('setSelector').classList.remove('d-none');
+    document.getElementById('setStreamSelector').classList.add('d-none');
+  } else if (setExtent === 'Sets by Stream Queue') {
+    document.getElementById('setSelector').classList.add('d-none');
+    document.getElementById('setStreamSelector').classList.remove('d-none');
+  }
 });
 
 document.getElementById('refreshSets').addEventListener('click', () => {
