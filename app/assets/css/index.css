@@ -4,11 +4,6 @@ body {
   background-color: crimson;
 }
 
-.card-icon {
-  filter: invert(25%) sepia(92%) saturate(7491%) hue-rotate(359deg) brightness(101%) contrast(121%);
-  width: 1em;
-}
-
 .btn-success img {
   width: 16px;
 }
@@ -157,7 +152,7 @@ body {
   --color-blue-primary-filter: invert(35%) sepia(51%) saturate(2176%) hue-rotate(204deg) brightness(95%) contrast(85%);
   --color-dark-gray: #3b4350;
   --color-dark-gray-filter: invert(21%) sepia(13%) saturate(857%) hue-rotate(178deg) brightness(99%) contrast(85%);
-  --color-slate: #97a4af;
+  --color-slate: rgba(3,18,33,.6);
   --state-is-created: var(--color-blue-primary);
   --state-is-created-filter: var(--color-blue-primary-filter);
   --state-is-completed: var(--color-slate)
@@ -199,6 +194,10 @@ body {
 
 .bracket-public .text-muted {
   color: #999
+}
+
+.text-xs {
+  font-size: 9px
 }
 
 .bracket-public .round-header {
@@ -400,6 +399,33 @@ body {
   filter: invert(57%) sepia(54%) saturate(3997%) hue-rotate(100deg) brightness(98%) contrast(73%);
   height: 20px;
   width: 20px
+}
+
+.match-station {
+  color: #fff;
+  background: var(--color-slate);
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  height: 46px;
+  width: 40px;
+  text-align: center;
+  transform-style: preserve-3d
+}
+
+.match-station>* {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 1
+}
+
+.match-station .stream-name {
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-left: 2px;
+  margin-right: 2px
 }
 
 .text-ellipsis {

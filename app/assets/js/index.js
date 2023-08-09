@@ -196,6 +196,10 @@ const querySets = async (eventId, page, perPage, apiToken) => {
                 }
               }
             }
+            stream {
+              streamName
+              streamSource
+            }
             completedAt
           }
         }
@@ -264,10 +268,16 @@ const createMatch = (matchNode) => {
   matchSectionBottom.classList.add('match-section', 'match-section-bottom');
   matchSectionBottom.appendChild(createMatchSectionWrapper(matchNode.slots[1]));
 
+  let matchStation = document.createTextNode('');
+  if (matchNode.completedAt === null && matchNode.stream) {
+    matchStation = createMatchStation(matchNode.stream)
+  }
+
   matchAffixWrapper.append(
     matchSectionTop,
     matchSpacer,
     matchSectionBottom,
+    matchStation,
     createIdentifierLabel(matchNode.identifier)
   );
   match.appendChild(matchAffixWrapper);
@@ -358,6 +368,40 @@ const createMatchPlayerInfo = (standing) => {
   }
   return matchPlayerInfo;
 };
+
+const createMatchStation = (stream) => {
+  let matchStation = document.createElement('div');
+  matchStation.classList.add('match-station');
+
+  let matchStationInner = document.createElement('div');
+
+  if (stream) {
+    let matchStreamOuter = document.createElement('div');
+
+    let matchStream = document.createElement('div');
+    if (stream.streamSource === 'TWITCH') {
+      let streamSVG = document.createElement('img');
+      streamSVG.classList.add('btn-close-white');
+      streamSVG.setAttribute('src', 'assets/images/svg/twitch.svg');
+      matchStream.appendChild(streamSVG);
+    } else {
+      let streamSVG = document.createElement('img');
+      streamSVG.classList.add('btn-close-white');
+      streamSVG.setAttribute('src', 'assets/images/svg/headset.svg');
+      matchStream.appendChild(streamSVG);
+    }
+
+    let matchStreamName = document.createElement('div');
+    matchStreamName.classList.add('stream-name', 'text-xs');
+    matchStreamName.textContent = stream.streamName;
+
+    matchStreamOuter.append(matchStream, matchStreamName);
+    matchStationInner.append(matchStreamOuter);
+  }
+
+  matchStation.appendChild(matchStationInner);
+  return matchStation;
+}
 
 const createIdentifierLabel = (identifier) => {
   let identifierLabel = document.createElement('span');
