@@ -1,6 +1,5 @@
 // index.js
 
-const perPage = 10;
 const colourObj = [
   {
     'name': 'Red',
@@ -45,13 +44,20 @@ const colourObj = [
 ];
 
 let characterList = [];
-
-let tournamentId = null;
-let streamObj = {};
-let setIdObj = {};
 let playerObj = {};
 
 // start.gg Interfacing
+
+const perPage = 10;
+
+const CREATED = 1;
+const ACTIVE = 2;
+const COMPLETED = 3;
+
+let tournamentId = null;
+let timerList = [];
+let streamObj = {};
+let setIdObj = {};
 
 const queryTournamentCountAsAdmin = async (apiToken) => {
   const query = `
@@ -196,11 +202,12 @@ const querySets = async (eventId, page, perPage, apiToken) => {
                 }
               }
             }
+            startedAt
+            state
             stream {
               streamName
               streamSource
             }
-            completedAt
           }
         }
       }
@@ -249,8 +256,14 @@ const queryStreamQueue = async (tournamentId, apiToken) => {
 const createMatch = (matchNode) => {
   let match = document.createElement('div');
   match.classList.add('match', 'has-identifier', 'reportable');
-  if (matchNode.completedAt === null) {
+  if (
+    matchNode.state !== COMPLETED &&
+    (matchNode.slots[0].entrant !== null && matchNode.slots[1].entrant !== null)
+  ) {
     match.classList.add('playable');
+  }
+  if (matchNode.state === ACTIVE) {
+    match.classList.add('in-progress');
   }
   match.setAttribute('data-set-id', matchNode.id);
 
@@ -259,18 +272,18 @@ const createMatch = (matchNode) => {
 
   let matchSectionTop = document.createElement('div');
   matchSectionTop.classList.add('match-section', 'match-section-top');
-  matchSectionTop.appendChild(createMatchSectionWrapper(matchNode.slots[0]));
+  matchSectionTop.appendChild(createMatchSectionWrapper(matchNode.slots[0], matchNode.state));
 
   let matchSpacer = document.createElement('div');
   matchSpacer.classList.add('match-spacer');
 
   let matchSectionBottom = document.createElement('div');
   matchSectionBottom.classList.add('match-section', 'match-section-bottom');
-  matchSectionBottom.appendChild(createMatchSectionWrapper(matchNode.slots[1]));
+  matchSectionBottom.appendChild(createMatchSectionWrapper(matchNode.slots[1], matchNode.state));
 
   let matchStation = document.createTextNode('');
-  if (matchNode.completedAt === null && matchNode.stream) {
-    matchStation = createMatchStation(matchNode.stream)
+  if ((matchNode.state !== COMPLETED && matchNode.stream) || matchNode.state === ACTIVE) {
+    matchStation = createMatchStation(matchNode.stream, matchNode.state, matchNode.startedAt);
   }
 
   matchAffixWrapper.append(
@@ -284,7 +297,7 @@ const createMatch = (matchNode) => {
   return match;
 };
 
-const createMatchSectionWrapper = (slot) => {
+const createMatchSectionWrapper = (slot, state) => {
   let matchPlayerName = document.createElement('div');
   matchPlayerName.classList.add('matchSectionWrapper');
 
@@ -293,9 +306,9 @@ const createMatchSectionWrapper = (slot) => {
 
   matchPlayer.appendChild(createMatchPlayerName(slot.entrant));
   if (slot.standing !== null) {
-    matchPlayer.appendChild(createMatchPlayerInfo(slot.standing));
+    matchPlayer.appendChild(createMatchPlayerInfo(slot.standing, state));
 
-    if (slot.standing.stats.score.value !== null) {
+    if (slot.standing.stats.score.value !== null && state !== ACTIVE) {
       if (slot.standing.placement === 1) {
         matchPlayer.classList.add('winner');
       } else {
@@ -339,7 +352,7 @@ const createMatchPlayerName = (entrant) => {
   return matchPlayerName;
 };
 
-const createMatchPlayerInfo = (standing) => {
+const createMatchPlayerInfo = (standing, state) => {
   let matchPlayerInfo = document.createElement('div');
   matchPlayerInfo.classList.add('match-player-info');
 
@@ -359,17 +372,24 @@ const createMatchPlayerInfo = (standing) => {
     checkSVG.classList.add('text-success');
 
     matchPlayerInfo.appendChild(checkSVG);
-  } else if (standing.stats.score.value !== null) {
+  } else if (standing.stats.score.value !== null || state === ACTIVE) {
+    let matchScore = standing.stats.score.value;
     let matchPlayerStocks = document.createElement('div');
     matchPlayerStocks.classList.add('match-player-stocks');
-    matchPlayerStocks.innerText = standing.stats.score.value;
+    if (state == ACTIVE) {
+      if (matchScore === null) {
+        matchScore = 0;
+      }
+      matchPlayerStocks.classList.add('match-in-progress');
+    }
+    matchPlayerStocks.innerText = matchScore;
 
     matchPlayerInfo.appendChild(matchPlayerStocks);
   }
   return matchPlayerInfo;
 };
 
-const createMatchStation = (stream) => {
+const createMatchStation = (stream, state, startedAt) => {
   let matchStation = document.createElement('div');
   matchStation.classList.add('match-station');
 
@@ -396,7 +416,39 @@ const createMatchStation = (stream) => {
     matchStreamName.textContent = stream.streamName;
 
     matchStreamOuter.append(matchStream, matchStreamName);
-    matchStationInner.append(matchStreamOuter);
+    matchStationInner.appendChild(matchStreamOuter);
+  }
+
+  if (state === ACTIVE) {
+    let matchTimerSpacer = document.createTextNode('');
+    if (stream) {
+      matchTimerSpacer = document.createElement('div');
+      matchTimerSpacer.classList.add('match-timer-spacer');
+    }
+
+    let matchTimer = document.createElement('div');
+    matchTimer.classList.add('match-timer');
+
+    let seconds = Math.floor((Date.now() - (startedAt * 1000)) / 1000);
+    let minutes = Math.floor(seconds / 60);
+    let extraSeconds = seconds % 60;
+    minutes = minutes < 0 ? "0" + minutes : minutes;
+    extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds;
+
+    let matchTimerSpan = document.createElement('span');
+    timerList.push(setInterval(() => {
+      let seconds = Math.floor((Date.now() - (startedAt * 1000)) / 1000);
+      let minutes = Math.floor(seconds / 60);
+      let extraSeconds = seconds % 60;
+      minutes = minutes < 0 ? "0" + minutes : minutes;
+      extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds;
+
+      matchTimerSpan.textContent = `${minutes}:${extraSeconds}`;
+    }, 1000));
+    matchTimerSpan.textContent = `${minutes}:${extraSeconds}`;
+    matchTimer.appendChild(matchTimerSpan);
+
+    matchStationInner.append(matchTimerSpacer, matchTimer);
   }
 
   matchStation.appendChild(matchStationInner);
@@ -510,6 +562,10 @@ const populateEvents = async (tournamentId, apiToken) => {
 };
 
 const populateSets = async (eventId, apiToken) => {
+  for (let i = 0; i < timerList.length; i++) {
+    clearInterval(timerList[i]);
+  }
+  timerList = [];
   streamObj = {};
   setIdObj = {};
   document.getElementById('setPhases').replaceChildren();

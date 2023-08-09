@@ -152,9 +152,15 @@ body {
   --color-blue-primary-filter: invert(35%) sepia(51%) saturate(2176%) hue-rotate(204deg) brightness(95%) contrast(85%);
   --color-dark-gray: #3b4350;
   --color-dark-gray-filter: invert(21%) sepia(13%) saturate(857%) hue-rotate(178deg) brightness(99%) contrast(85%);
+  --color-green: #0d8225;
+  --color-green-filter: invert(16%) sepia(88%) saturate(4843%) hue-rotate(145deg) brightness(97%) contrast(90%);
+  --color-green-primary: var(--color-green);
+  --color-green-primary-filter: var(--color-green-filter);
   --color-slate: rgba(3,18,33,.6);
   --state-is-created: var(--color-blue-primary);
   --state-is-created-filter: var(--color-blue-primary-filter);
+  --state-is-active: var(--color-green-primary);
+  --state-is-active-filter: var(--color-green-primary-filter);
   --state-is-completed: var(--color-slate)
 }
 
@@ -333,6 +339,12 @@ body {
   flex-wrap: nowrap
 }
 
+.match .match-player .match-in-progress {
+  margin-right: 40px;
+  color: var(--state-is-active);
+  border-left: 2px solid #eee
+}
+
 .match .match-spacer {
   display: block;
   height: 0;
@@ -369,6 +381,14 @@ body {
   bottom: 0;
   margin: auto;
   height: 21px
+}
+
+.match.in-progress .match-label,.match.in-progress .match-station,.match.playable.in-progress .match-label,.match.playable.in-progress .match-station {
+  background: var(--state-is-active)
+}
+
+.match.in-progress .match-label .caret-right,.match.playable.in-progress .match-label .caret-right {
+  filter: var(--state-is-active-filter)
 }
 
 .match.playable .match-label {
@@ -418,6 +438,18 @@ body {
   top: 50%;
   transform: translateY(-50%);
   line-height: 1
+}
+
+.match-station .match-timer {
+  font-style: italic;
+  font-size: 10px
+}
+
+.match-station .match-timer-spacer {
+  border-top: 2px solid #fff;
+  width: 28px;
+  margin: 2px auto 3px;
+  opacity: .3
 }
 
 .match-station .stream-name {
