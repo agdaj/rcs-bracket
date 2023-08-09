@@ -53,6 +53,7 @@ const perPage = 10;
 const CREATED = 1;
 const ACTIVE = 2;
 const COMPLETED = 3;
+const CALLED = 6;
 
 let tournamentId = null;
 let timerList = [];
@@ -257,13 +258,16 @@ const createMatch = (matchNode) => {
   let match = document.createElement('div');
   match.classList.add('match', 'has-identifier', 'reportable');
   if (
-    matchNode.state !== COMPLETED &&
+    (matchNode.state !== COMPLETED && matchNode.state !== CALLED) &&
     (matchNode.slots[0].entrant !== null && matchNode.slots[1].entrant !== null)
   ) {
     match.classList.add('playable');
   }
   if (matchNode.state === ACTIVE) {
     match.classList.add('in-progress');
+  }
+  if (matchNode.state === CALLED) {
+    match.classList.add('called');
   }
   match.setAttribute('data-set-id', matchNode.id);
 
@@ -282,7 +286,10 @@ const createMatch = (matchNode) => {
   matchSectionBottom.appendChild(createMatchSectionWrapper(matchNode.slots[1], matchNode.state));
 
   let matchStation = document.createTextNode('');
-  if ((matchNode.state !== COMPLETED && matchNode.stream) || matchNode.state === ACTIVE) {
+  if (
+    (matchNode.state !== COMPLETED && matchNode.stream) ||
+    (matchNode.state === ACTIVE || matchNode.state === CALLED)
+  ) {
     matchStation = createMatchStation(matchNode.stream, matchNode.state, matchNode.startedAt);
   }
 
@@ -401,13 +408,13 @@ const createMatchStation = (stream, state, startedAt) => {
     let matchStream = document.createElement('div');
     if (stream.streamSource === 'TWITCH') {
       let streamSVG = document.createElement('img');
-      streamSVG.classList.add('btn-close-white');
       streamSVG.setAttribute('src', 'assets/images/svg/twitch.svg');
+      streamSVG.classList.add('btn-close-white');
       matchStream.appendChild(streamSVG);
     } else {
       let streamSVG = document.createElement('img');
-      streamSVG.classList.add('btn-close-white');
       streamSVG.setAttribute('src', 'assets/images/svg/headset.svg');
+      streamSVG.classList.add('btn-close-white');
       matchStream.appendChild(streamSVG);
     }
 
@@ -417,11 +424,20 @@ const createMatchStation = (stream, state, startedAt) => {
 
     matchStreamOuter.append(matchStream, matchStreamName);
     matchStationInner.appendChild(matchStreamOuter);
+  } else if (state === CALLED) {
+    let matchCalled = document.createElement('div');
+
+    let bellSVG = document.createElement('img');
+    bellSVG.setAttribute('src', 'assets/images/svg/bell.svg');
+    bellSVG.classList.add('btn-close-white', 'bell-o');
+    matchCalled.appendChild(bellSVG);
+
+    matchStationInner.appendChild(matchCalled);
   }
 
-  if (state === ACTIVE) {
+  if (state === ACTIVE || state === CALLED) {
     let matchTimerSpacer = document.createTextNode('');
-    if (stream) {
+    if (stream || state === CALLED) {
       matchTimerSpacer = document.createElement('div');
       matchTimerSpacer.classList.add('match-timer-spacer');
     }
@@ -746,13 +762,13 @@ const populateSets = async (eventId, apiToken) => {
         let streamSource = streamInfoObj['source'];
         if (streamSource === 'TWITCH') {
           let streamSVG = document.createElement('img');
-          streamSVG.classList.add('btn-close-white');
           streamSVG.setAttribute('src', 'assets/images/svg/twitch.svg');
+          streamSVG.classList.add('btn-close-white');
           streamLabel.appendChild(streamSVG);
         } else {
           let streamSVG = document.createElement('img');
-          streamSVG.classList.add('btn-close-white');
           streamSVG.setAttribute('src', 'assets/images/svg/headset.svg');
+          streamSVG.classList.add('btn-close-white');
           streamLabel.appendChild(streamSVG);
         }
         streamLabel.appendChild(document.createTextNode(" " + streamName));
