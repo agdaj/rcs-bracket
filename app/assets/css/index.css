@@ -48,7 +48,7 @@ body {
 }
 
 #setPhases, #setPhaseGroup {
-  height: 300px;
+  height: 280px;
   overflow-y: auto;
 }
 
@@ -191,14 +191,14 @@ body {
 }
 
 .bracket-phase {
-  padding-left: 20px;
+  padding-left: 15px;
 }
 
 .bracket-public {
   font-size: 10px;
   font-family: Roboto, sans-serif;
   line-height: 1.428571429;
-  width: 200px;
+  width: 195px;
   color: #333;
   background-color: #fff
 }

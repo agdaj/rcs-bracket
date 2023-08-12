@@ -680,7 +680,7 @@ const populateSets = async (eventId, apiToken) => {
           }
 
           let setRowContent = document.createElement('div');
-          setRowContent.classList.add('row', 'bracket-phase');
+          setRowContent.classList.add('row', 'g-0', 'bracket-phase');
           Object.entries(sets).forEach(([_, setNode]) => {
             if (setNode.slots[0].entrant === null || setNode.slots[1].entrant === null) {
               return;
@@ -813,7 +813,7 @@ const populateSets = async (eventId, apiToken) => {
         }
 
         let setRowContent = document.createElement('div');
-        setRowContent.classList.add('row', 'bracket-phase');
+        setRowContent.classList.add('row', 'g-0', 'bracket-phase');
         Object.values(streamInfoObj['sets']).forEach((setId) => {
           if (!(setId in setIdObj)) {
             return;
