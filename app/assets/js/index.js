@@ -779,12 +779,14 @@ const populateSets = async (eventId, apiToken) => {
         let streamNav = document.createElement("li");
         streamNav.classList.add("nav-item");
         streamNav.setAttribute('role', 'presentation');
+        streamNav.setAttribute('data-bs-toggle-tooltip', 'tooltip');
+        streamNav.setAttribute('data-bs-placement', 'top');
+        streamNav.setAttribute('data-bs-title', streamName);
         streamNav.style.width = '100%';
-        streamNav.style.whiteSpace = 'nowrap';
+        new bootstrap.Tooltip(streamNav);
 
         let streamLink = document.createElement("a");
-        streamLink.classList.add('nav-link');
-        streamLink.style.overflow = 'scroll';
+        streamLink.classList.add('nav-link', 'text-ellipsis');
         streamLink.setAttribute('id', navId);
         streamLink.setAttribute('data-bs-toggle', 'pill');
         streamLink.setAttribute('data-bs-target', '#' + contentId);
