@@ -58,7 +58,8 @@ app.whenReady().then(() => {
       settings = {
         'path.assets': assets_path,
         'path.output': output_path,
-        'api.token': ''
+        'api.token': '',
+        'save.format': 'json'
       }
 
       fs.writeFileSync(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(settings), 'utf-8');
@@ -131,8 +132,18 @@ app.whenReady().then(() => {
             .then(() => { return true })
             .catch(() => { return false });
   });
-  ipcMain.handle('save:info-obj', (_, obj) => {
-    return fs.promises.writeFile(path.join(settings['path.output'], 'info.json'), JSON.stringify(obj), 'utf-8')
+  ipcMain.handle('save:info-obj', (_, obj, fname) => {
+    return fs.promises.writeFile(path.join(settings['path.output'], path.basename(fname)), JSON.stringify(obj), 'utf-8')
+            .then(() => { return true })
+            .catch(() => { return false });
+  });
+  ipcMain.handle('save:info-text', (_, text, fname) => {
+    return fs.promises.writeFile(path.join(settings['path.output'], path.basename(fname)), text, 'utf-8')
+            .then(() => { return true })
+            .catch(() => { return false });
+  });
+  ipcMain.handle('save:info-char', (_, character, skin, fname) => {
+    return fs.promises.copyFile(path.join(settings['path.assets'], 'stock-icons', character, skin), path.join(settings['path.output'], path.basename(fname)))
             .then(() => { return true })
             .catch(() => { return false });
   });

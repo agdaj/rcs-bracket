@@ -14,6 +14,8 @@ contextBridge.exposeInMainWorld('fsAPI', {
   save: {
     settingsObj: (obj) => ipcRenderer.invoke('save:settings-obj', obj),
     playerObj: (obj) => ipcRenderer.invoke('save:player-obj', obj),
-    infoObj: (obj) => ipcRenderer.invoke('save:info-obj', obj),
+    infoObj: (obj, fname) => ipcRenderer.invoke('save:info-obj', obj, fname),
+    infoText: (text, fname) => ipcRenderer.invoke('save:info-text', text, fname),
+    infoChar: (character, skin, fname) => ipcRenderer.invoke('save:info-char', character, skin, fname),
   }
 });

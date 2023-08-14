@@ -424,21 +424,43 @@
       <div class="offcanvas-body">
         <ul class="nav nav-tabs mb-3" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="players-tab" data-bs-toggle="tab" data-bs-target="#players-tab-pane" type="button" role="tab" aria-controls="players-tab-pane" aria-selected="true">Players</button>
+            <button class="nav-link active" id="save-tab" data-bs-toggle="tab" data-bs-target="#save-tab-pane" type="button" role="tab" aria-controls="save-tab-pane" aria-selected="true">Save</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="players-tab" data-bs-toggle="tab" data-bs-target="#players-tab-pane" type="button" role="tab" aria-controls="players-tab-pane" aria-selected="false">Players</button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="shortcuts-tab" data-bs-toggle="tab" data-bs-target="#shortcuts-tab-pane" type="button" role="tab" aria-controls="shortcuts-tab-pane" aria-selected="false">Shortcuts</button>
           </li>
         </ul>
         <div class="tab-content">
-          <div class="tab-pane fade show active" id="players-tab-pane" role="tabpanel" aria-labelledby="players-tab" tabindex="0">
+          <div class="tab-pane fade show active" id="save-tab-pane" role="tabpanel" aria-labelledby="save-tab" tabindex="0">
+            <form id="saveSettingsForm">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="saveFormat" id="saveFormatJSON" value="json" checked>
+                <label class="form-check-label" for="saveFormatJSON">
+                  Save as JSON
+                </label>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="saveFormat" id="saveFormatIndividual" value="individual">
+                <label class="form-check-label" for="saveFormatIndividual">
+                  Save as Individual Files
+                </label>
+              </div>
+              <div class="mb-3">
+                <button class="btn btn-success float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Update Save Settings"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
+              </div>
+            </form>
+          </div>
+          <div class="tab-pane fade" id="players-tab-pane" role="tabpanel" aria-labelledby="players-tab" tabindex="0">
             <form id="playersForm">
               <div class="mb-3">
                 <label for="editPlayersJSON" class="form-label">Players JSON</label>
                 <textarea class="form-control" name="editPlayersJSON" id="editPlayersJSON" rows="6"></textarea>
               </div>
               <div class="mb-3">
-                <button class="btn btn-success float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Save Players Info"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
+                <button class="btn btn-success float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Update Players Info"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
               </div>
             </form>
           </div>
@@ -476,18 +498,34 @@
       </div>
 
       <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div class="toast align-items-center text-bg-success border-0" id="savePlayerInfoSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast align-items-center text-bg-success border-0" id="updateSaveSettingsSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="d-flex">
             <div class="toast-body">
-              Players info successfully saved!
+              Save settings successfully updated!
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>
         </div>
-        <div class="toast align-items-center text-bg-danger border-0" id="savePlayerInfoFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast align-items-center text-bg-danger border-0" id="updateSaveSettingsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="d-flex">
             <div class="toast-body">
-              Failed to save players info!
+              Failed to update save settings!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-success border-0" id="updatePlayerInfoSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Players info successfully updated!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-danger border-0" id="updatePlayerInfoFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Failed to update players info!
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>

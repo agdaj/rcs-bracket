@@ -43,6 +43,7 @@ const colourObj = [
   }
 ];
 
+let saveFormat = null;
 let characterList = [];
 let playerObj = {};
 
@@ -495,6 +496,8 @@ const loadSettings = async () => {
   let apiToken = settingsObj['api.token'];
 
   document.getElementById('apiToken').value = apiToken;
+
+  saveFormat = settingsObj['save.format'];
 };
 
 const populateTournaments = async (apiToken) => {
@@ -1475,6 +1478,46 @@ const swapCommentators = async () => {
   document.getElementById('commentator2Name').value = commentator1Name;
 };
 
+const updateSaveSettingsObj = async (newSaveSettingsObj) => {
+  saveFormat = newSaveSettingsObj['saveFormat'];
+
+  // Update save settings
+  let success = await window.fsAPI.fetch.settingsObj()
+    .then(settingsObj => {
+      settingsObj['save.format'] = saveFormat;
+      return window.fsAPI.save.settingsObj(settingsObj);
+    });
+  if (success) {
+    const toast = new bootstrap.Toast(document.getElementById('updateSaveSettingsSuccessToast'));
+    toast.show();
+  } else {
+    const toast = new bootstrap.Toast(document.getElementById('updateSaveSettingsFailToast'));
+    toast.show();
+  }
+};
+
+const editPlayerObj = async (newPlayerObj) => {
+  validatePlayerObj(newPlayerObj)
+    .then(newPlayerObj => updatePlayerObj(newPlayerObj))
+    .then(() => {
+      const toast = new bootstrap.Toast(document.getElementById('updatePlayerInfoSuccessToast'));
+      toast.show();
+    })
+    .catch(err => {
+      console.log(err);
+      if (err instanceof SyntaxError) {
+        const toast = new bootstrap.Toast(document.getElementById('syntaxPlayerInfoFailToast'));
+        toast.show();
+      } else if (err === 'Invalid Player Object') {
+        const toast = new bootstrap.Toast(document.getElementById('validatePlayerInfoFailToast'));
+        toast.show();
+      } else {
+        const toast = new bootstrap.Toast(document.getElementById('updatePlayerInfoFailToast'));
+        toast.show();
+      }
+    });
+};
+
 const validatePlayerObj = async (newPlayerObj) => {
   newPlayerObj = JSON.parse(newPlayerObj);
 
@@ -1495,7 +1538,7 @@ const validatePlayerObj = async (newPlayerObj) => {
   return newPlayerObj;
 };
 
-const editPlayerObj = async (newPlayerObj) => {
+const updatePlayerObj = async (newPlayerObj) => {
   playerObj = newPlayerObj;
 
   const playerListDatalist = document.getElementById('playerList');
@@ -1510,7 +1553,7 @@ const editPlayerObj = async (newPlayerObj) => {
   window.fsAPI.save.playerObj(playerObj);
 };
 
-const updatePlayerObj = async (infoObj) => {
+const updatePlayerObjFromInfoObj = async (infoObj) => {
   let player1Name = infoObj['player1Name'].trim();
   let player1Char = infoObj['player1Char'];
   let player1Skin = infoObj['player1Skin'];
@@ -1554,7 +1597,7 @@ const updatePlayerObj = async (infoObj) => {
 };
 
 const saveInfoObj = async (infoObj) => {
-  let success = await window.fsAPI.save.infoObj(infoObj);
+  let success = await window.fsAPI.save.infoObj(infoObj, 'info.json');
   if (success) {
     const toast = new bootstrap.Toast(document.getElementById('saveInfoSuccessToast'));
     toast.show();
@@ -1562,6 +1605,34 @@ const saveInfoObj = async (infoObj) => {
     const toast = new bootstrap.Toast(document.getElementById('saveInfoFailToast'));
     toast.show();
   }
+};
+
+const saveInfoObjIndividual = async (infoObj) => {
+  for (const [key, value] of Object.entries(infoObj)) {
+    let success;
+    if (['player1Skin', 'player2Skin', 'player1Skin2', 'player2Skin2'].includes(key)) {
+      let fname = `${key}.png`;
+      let character = infoObj[key.replace('Skin', 'Char')];
+      let skin = value;
+
+      success = await window.fsAPI.save.infoChar(character, skin, fname);
+    } else {
+      let fname = `${key}.txt`;
+      let text = value;
+
+      success = await window.fsAPI.save.infoText(text, fname);
+    }
+
+    if (!success) {
+      console.log(key, value)
+      const toast = new bootstrap.Toast(document.getElementById('saveInfoFailToast'));
+      toast.show();
+      return;
+    }
+  }
+
+  const toast = new bootstrap.Toast(document.getElementById('saveInfoSuccessToast'));
+  toast.show();
 };
 
 // Call functions for initial rendering
@@ -1737,12 +1808,38 @@ document.getElementById('bracketForm').addEventListener('submit', (event) => {
   serializedInfo['player1LCheck'] = !(formData.get('player1LCheck') === null);
   serializedInfo['player2LCheck'] = !(formData.get('player2LCheck') === null);
 
-  updatePlayerObj(serializedInfo);
-  saveInfoObj(serializedInfo);
+  updatePlayerObjFromInfoObj(serializedInfo);
+  if (saveFormat === 'individual') {
+    serializedInfo['player1Name'] = serializedInfo['player1LCheck'] ? serializedInfo['player1Name'] + ' [L]' : serializedInfo['player1Name'];
+    serializedInfo['player2Name'] = serializedInfo['player2LCheck'] ? serializedInfo['player2Name'] + ' [L]' : serializedInfo['player2Name'];
+
+    delete serializedInfo['bestOfNum'];
+    delete serializedInfo['player1LCheck'];
+    delete serializedInfo['player2LCheck'];
+    saveInfoObjIndividual(serializedInfo);
+  } else {
+    saveInfoObj(serializedInfo);
+  }
 });
 
 document.getElementById('offcanvasSettings').addEventListener('show.bs.offcanvas', () => {
+  let saveFormatInputs = document.getElementById('saveSettingsForm').querySelectorAll('input[name="saveFormat"]');
+  for (let i = 0; i < saveFormatInputs.length; i++) {
+    if (saveFormatInputs[i].value === saveFormat) {
+      saveFormatInputs[i].checked = true;
+    } else {
+      saveFormatInputs[i].checked = false;
+    }
+  }
   document.getElementById('editPlayersJSON').value = JSON.stringify(playerObj, null, 2);
+});
+
+document.getElementById('saveSettingsForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const serializedInfo = Object.fromEntries(formData.entries());
+
+  updateSaveSettingsObj(serializedInfo);
 });
 
 document.getElementById('playersForm').addEventListener('submit', (event) => {
@@ -1750,25 +1847,7 @@ document.getElementById('playersForm').addEventListener('submit', (event) => {
   const formData = new FormData(event.target);
   const serializedInfo = Object.fromEntries(formData.entries());
 
-  validatePlayerObj(serializedInfo['editPlayersJSON'])
-    .then(newPlayerJSON => editPlayerObj(newPlayerJSON))
-    .then(() => {
-      const toast = new bootstrap.Toast(document.getElementById('savePlayerInfoSuccessToast'));
-      toast.show();
-    })
-    .catch(err => {
-      console.log(err);
-      if (err instanceof SyntaxError) {
-        const toast = new bootstrap.Toast(document.getElementById('syntaxPlayerInfoFailToast'));
-        toast.show();
-      } else if (err === 'Invalid Player Object') {
-        const toast = new bootstrap.Toast(document.getElementById('validatePlayerInfoFailToast'));
-        toast.show();
-      } else {
-        const toast = new bootstrap.Toast(document.getElementById('savePlayerInfoFailToast'));
-        toast.show();
-      }
-    });
+  editPlayerObj(serializedInfo['editPlayersJSON']);
 });
 
 // Enable tooltips
