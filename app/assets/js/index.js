@@ -932,12 +932,15 @@ const adjustFormWithEvent = async (event) => {
 }
 
 const adjustFormWithRound = async (round) => {
-  if (round === 'Grand Final' || round === 'Grand Final Reset') {
-    if (round === 'Grand Final') {
+  if (
+    round === 'Grand Final' || round === 'Grand Final Reset' ||
+    round === 'Grand Finals' || round === 'Grand Finals Reset'
+  ) {
+    if (round === 'Grand Final' || round === 'Grand Finals') {
       document.getElementById('player1LCheck').checked = false;
       document.getElementById('player2LCheck').checked = true;
     }
-    if (round === 'Grand Final Reset') {
+    if (round === 'Grand Final Reset' || round === 'Grand Finals Reset') {
       document.getElementById('player1LCheck').checked = true;
       document.getElementById('player2LCheck').checked = true;
     }
