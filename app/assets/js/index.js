@@ -1502,14 +1502,22 @@ const copySetToClipboard = async () => {
 const clearCommentators = async () => {
   document.getElementById('commentator1Name').value = '';
   document.getElementById('commentator2Name').value = '';
+  document.getElementById('commentator1Pronouns').value = '';
+  document.getElementById('commentator2Pronouns').value = '';
 };
 
 const swapCommentators = async () => {
   const commentator1Name = document.getElementById('commentator1Name').value;
   const commentator2Name = document.getElementById('commentator2Name').value;
 
+  const commentator1Pronouns = document.getElementById('commentator1Pronouns').value;
+  const commentator2Pronouns = document.getElementById('commentator2Pronouns').value;
+
   document.getElementById('commentator1Name').value = commentator2Name;
   document.getElementById('commentator2Name').value = commentator1Name;
+
+  document.getElementById('commentator1Pronouns').value = commentator2Pronouns;
+  document.getElementById('commentator2Pronouns').value = commentator1Pronouns;
 };
 
 const updateSaveSettingsObj = async (newSaveSettingsObj) => {
