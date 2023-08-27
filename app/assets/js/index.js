@@ -193,6 +193,9 @@ const querySets = async (eventId, page, perPage, apiToken) => {
                 participants {
                   prefix
                   gamerTag
+                  user {
+                    genderPronoun
+                  }
                 }
               }
               standing {
@@ -902,6 +905,26 @@ const fillMatchInfo = async (matchNode) => {
   adjustFormWithRound(round);
   resetScores();
 
+  if (
+    matchNode.slots[0]['entrant']['participants'].length == 1 &&
+    matchNode.slots[0]['entrant']['participants'][0]['user']['genderPronoun']
+  ) {
+    let player1Pronouns = matchNode.slots[0]['entrant']['participants'][0]['user']['genderPronoun'];
+    document.getElementById('player1Pronouns').value = player1Pronouns;
+  } else {
+    document.getElementById('player1Pronouns').value = '';
+  }
+
+  if (
+    matchNode.slots[1]['entrant']['participants'].length == 1 &&
+    matchNode.slots[1]['entrant']['participants'][0]['user']['genderPronoun']
+  ) {
+    let player2Pronouns = matchNode.slots[1]['entrant']['participants'][0]['user']['genderPronoun'];
+    document.getElementById('player2Pronouns').value = player2Pronouns;
+  } else {
+    document.getElementById('player2Pronouns').value = '';
+  }
+
   if (player1Name in playerObj) {
     loadPlayer1Character(playerObj[player1Name].char, playerObj[player1Name].skin);
     if (playerObj[player1Name].char2 && playerObj[player1Name].skin2) {
@@ -1406,6 +1429,9 @@ const swapPlayers = async () => {
   const player1Name = document.getElementById('player1Name').value;
   const player2Name = document.getElementById('player2Name').value;
 
+  const player1Pronouns = document.getElementById('player1Pronouns').value;
+  const player2Pronouns = document.getElementById('player2Pronouns').value;
+
   const player1Skin = document.querySelector('input[name="player1Skin"]:checked') ? document.querySelector('input[name="player1Skin"]:checked').value : '';
   const player2Skin = document.querySelector('input[name="player2Skin"]:checked') ? document.querySelector('input[name="player2Skin"]:checked').value : '';
   const player1Skin2 = document.querySelector('input[name="player1Skin2"]:checked') ? document.querySelector('input[name="player1Skin2"]:checked').value : '';
@@ -1425,6 +1451,9 @@ const swapPlayers = async () => {
   document.getElementById('player1Name').value = player2Name;
   document.getElementById('player2Name').value = player1Name;
 
+  document.getElementById('player1Pronouns').value = player2Pronouns;
+  document.getElementById('player2Pronouns').value = player1Pronouns;
+
   loadPlayer1CharacterIcons(player2Char, player2Skin);
   loadPlayer2CharacterIcons(player1Char, player1Skin);
   loadPlayer1Character2Icons(player2Char2, player2Skin2);
@@ -1439,6 +1468,8 @@ const clearPlayers = async () => {
 
   document.getElementById('player1Name').value = '';
   document.getElementById('player2Name').value = '';
+  document.getElementById('player1Pronouns').value = '';
+  document.getElementById('player2Pronouns').value = '';
 
   loadPlayer1Character(characterList[characterList.length - 1]);
   loadPlayer2Character(characterList[characterList.length - 1]);
