@@ -14,14 +14,10 @@
 
 ## Interface
 - [ ] Update interface colours, styles
-  - [ ] Make components leaner or choose other components/styles/theme
   - [ ] Add dark mode, other colour modes
-- [ ] Multi-character select (only up to doubles)
+  - [ ] Convert CSS to SCSS
 - [ ] Support input of social media information
-- [ ] Integrate start.gg API to scrape tournament information
-  - [ ] Show more available set statuses (check-in, started, etc.)
-  - [ ] Fetch stream queue
 
-## Bugs
-- [ ] Resolve inconsistent behaviour with finding settings.json during app initialization
-  - [ ] Explore scope of issue when manipulating settings.json after app initialization
+## Features
+- [ ] Add features to manipulate external stream layouts
+  - [ ] Add ability to swap video sources of OBS independent of form info

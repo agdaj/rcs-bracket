@@ -3,12 +3,13 @@ Royal City Smash SSBU Bracket Manager in Electron. A pet project by Jireh Agda (
 
 ## Features
 - Accepts standard bracket overlay components as inputs
-- Allows tracking of players, characters, and score, including double elimination [L] state (set Round as **Grand Final** or **Grand Final Reset**)
+- Allows tracking of players, characters, and score, including double elimination [L] state (set Round as **Grand Final**, **Grand Finals**, **Grand Final Reset**, or **Grand Finals Reset**)
+- **NEW**: Updates interface for more character inputs (up to 2 per side) (end Event Name with **Doubles**)
 - Searches character assets in folder to display character renders, stock icons, and selection screen images (see [Character Assets](#character-assets))
 - Supports 2-person commentator input
-- Generates output JSON to transcribe set state (`info.json`)
-- **NEW**: Integrates start.gg API info to display events and sets of a tournament and fill out details and players
-- **NEW**: Permits editing of player cache info
+- Generates output JSON to transcribe set state (`info.json`) or generate individual files for each field (**NEW**)
+- Integrates start.gg API info to display events and sets of a tournament and fill out details and players
+- Permits editing of player cache info
 
 ## Character Assets
 ```
@@ -42,4 +43,4 @@ To allow the manager to use character assets correctly, the folder contents must
 - `stock-icons/`
   - This is a folder where characters' stock icons are put in. These images will be used to symbolize a character's different skins and should line up with the how a character's assets are like within `renders/`.
 
-During app initialization, the app will ask where character assets in this structure are found. This path will be modifiable in the future as a setting that can be updated. There are no restrictions to what assets are placed within this folder, but the interface is tailored towards Super Smash Bros. Ultimate. The initial character that is loaded is the last character on the list.
+During app initialization, the app will ask where character assets in this structure are found. This path can be updated later after initialization (File -> Change Assets Folder...). There are no restrictions to what assets are placed within this folder, but the interface is tailored towards Super Smash Bros. Ultimate. The initial character that is loaded is the last character on the list.
