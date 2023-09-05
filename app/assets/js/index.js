@@ -1903,3 +1903,7 @@ Mousetrap.bind(['1'], () => { incrementP1Score() });
 Mousetrap.bind(['2'], () => { incrementP2Score() });
 Mousetrap.bind(['esc'], () => { resetScores() });
 Mousetrap.bind(['enter'], () => { if (document.activeElement.tagName === 'BODY') document.getElementById('submitFormBtn').click(); });
+Mousetrap.bind(['ctrl+s', 'meta+s'], function(e) {
+  document.getElementById('submitFormBtn').click();
+  return false;
+});
