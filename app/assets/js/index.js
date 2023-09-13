@@ -1116,6 +1116,15 @@ const loadCharacterList = async () => {
   player1Char2SS.replaceChildren();
   player2Char2SS.replaceChildren();
 
+  const player1CharSelect = document.getElementById('player1Char');
+  const player2CharSelect = document.getElementById('player2Char');
+  const player1Char2Select = document.getElementById('player1Char2');
+  const player2Char2Select = document.getElementById('player2Char2');
+  player1CharSelect.replaceChildren();
+  player2CharSelect.replaceChildren();
+  player1Char2Select.replaceChildren();
+  player2Char2Select.replaceChildren();
+
   characterList = await window.fsAPI.fetch.characterList();
   for (let i = 0; i < characterList.length; i++) {
     const characterSelectScreen = await window.fsAPI.fetch.characterSelectScreen(characterList[i]);
@@ -1169,6 +1178,17 @@ const loadCharacterList = async () => {
     player1Char2SS.appendChild(p1Char2SSDiv);
     player2Char2SS.appendChild(p2Char2SSDiv);
   }
+
+  Object.values(characterList).sort().forEach((character) => {
+    let char1Option = new Option(character);
+    player1CharSelect.add(char1Option, undefined);
+    let char2Option = new Option(character);
+    player2CharSelect.add(char2Option, undefined);
+    let char1Option2 = new Option(character);
+    player1Char2Select.add(char1Option2, undefined);
+    let char2Option2 = new Option(character);
+    player2Char2Select.add(char2Option2, undefined);
+  });
 
   loadPlayer1Character(characterList[characterList.length - 1]);
   loadPlayer2Character(characterList[characterList.length - 1]);
@@ -1397,7 +1417,7 @@ const loadPlayerObj = async () => {
   for (let player in playerObj) {
     let playerListOption = document.createElement('option');
     playerListOption.setAttribute('value', player);
-    playerListDatalist.appendChild(playerListOption)
+    playerListDatalist.appendChild(playerListOption);
   }
 };
 
@@ -1589,7 +1609,7 @@ const updatePlayerObj = async (newPlayerObj) => {
   for (let player in playerObj) {
     let playerListOption = document.createElement('option');
     playerListOption.setAttribute('value', player);
-    playerListDatalist.appendChild(playerListOption)
+    playerListDatalist.appendChild(playerListOption);
   }
 
   window.fsAPI.save.playerObj(playerObj);
@@ -1632,7 +1652,7 @@ const updatePlayerObjFromInfoObj = async (infoObj) => {
   for (let player in playerObj) {
     let playerListOption = document.createElement('option');
     playerListOption.setAttribute('value', player);
-    playerListDatalist.appendChild(playerListOption)
+    playerListDatalist.appendChild(playerListOption);
   }
 
   window.fsAPI.save.playerObj(playerObj);
@@ -1800,6 +1820,22 @@ document.getElementById('player2Name').addEventListener('input', (event) => {
       loadPlayer2Character2(playerObj[event.target.value].char2, playerObj[event.target.value].skin2);
     }
   }
+});
+
+document.getElementById('player1Char').addEventListener('change', (event) => {
+  loadPlayer1Character(event.target.value);
+});
+
+document.getElementById('player2Char').addEventListener('change', (event) => {
+  loadPlayer2Character(event.target.value);
+});
+
+document.getElementById('player1Char2').addEventListener('change', (event) => {
+  loadPlayer1Character2(event.target.value);
+});
+
+document.getElementById('player2Char2').addEventListener('change', (event) => {
+  loadPlayer2Character2(event.target.value);
 });
 
 document.getElementById('resetScores').addEventListener('click', () => {

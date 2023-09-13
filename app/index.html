@@ -73,16 +73,28 @@
                       <div class="row g-0">
                         <div class="col-md-2 d-flex flex-row flex-md-column" id="player1CharCol">
                           <div class="flex-grow-1">
-                            <input type="hidden" name="player1Char" id="player1Char">
-                            <a href="#player1CharSSModal" data-bs-toggle="modal">
-                              <img class="img-char img-player-1-char" id="player1SkinRenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 1 Skin Render">
-                            </a>
+                            <div class="d-flex flex-column h-100">
+                              <div class="flex-grow-1">
+                                <a href="#player1CharSSModal" data-bs-toggle="modal">
+                                  <img class="img-char img-player-1-char" id="player1SkinRenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 1 Skin Render">
+                                </a>
+                              </div>
+                              <div class="flex-shrink-1">
+                                <select class="form-select form-select-sm" name="player1Char" id="player1Char" aria-label="Player 1 Character Select"></select>
+                              </div>
+                            </div>
                           </div>
                           <div class="flex-grow-1 d-none doubles-char">
-                            <input type="hidden" name="player1Char2" id="player1Char2">
-                            <a href="#player1Char2SSModal" data-bs-toggle="modal">
-                              <img class="img-char img-player-1-char" id="player1Skin2RenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 1 Skin Render 2">
-                            </a>
+                            <div class="d-flex flex-column h-100">
+                              <div class="flex-grow-1">
+                                <a href="#player1Char2SSModal" data-bs-toggle="modal">
+                                  <img class="img-char img-player-1-char" id="player1Skin2RenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="right" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 1 Skin Render 2">
+                                </a>
+                              </div>
+                              <div class="flex-shrink-1">
+                                <select class="form-select form-select-sm" name="player1Char2" id="player1Char2" aria-label="Player 1 Character 2 Select"></select>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <div class="col-md-10">
@@ -197,16 +209,28 @@
                         </div>
                         <div class="col-md-2 d-flex flex-row flex-md-column" id="player2CharCol">
                           <div class="flex-grow-1">
-                            <input type="hidden" name="player2Char" id="player2Char">
-                            <a href="#player2CharSSModal" data-bs-toggle="modal">
-                              <img class="img-char img-player-2-char" id="player2SkinRenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 2 Skin Render">
-                            </a>
+                            <div class="d-flex flex-column-reverse flex-md-column h-100">
+                              <div class="flex-grow-1">
+                                <a href="#player2CharSSModal" data-bs-toggle="modal">
+                                  <img class="img-char img-player-2-char" id="player2SkinRenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 2 Skin Render">
+                                </a>
+                              </div>
+                              <div class="flex-shrink-1">
+                                <select class="form-select form-select-sm" name="player2Char" id="player2Char" aria-label="Player 2 Character Select"></select>
+                              </div>
+                            </div>
                           </div>
                           <div class="flex-grow-1 d-none doubles-char">
-                            <input type="hidden" name="player2Char2" id="player2Char2">
-                            <a href="#player2Char2SSModal" data-bs-toggle="modal">
-                              <img class="img-char img-player-2-char" id="player2Skin2RenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 2 Skin Render 2">
-                            </a>
+                            <div class="d-flex flex-column-reverse flex-md-column h-100">
+                              <div class="flex-grow-1">
+                                <a href="#player2Char2SSModal" data-bs-toggle="modal">
+                                  <img class="img-char img-player-2-char" id="player2Skin2RenderImg" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Select Character" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=" alt="Player 2 Skin Render 2">
+                                </a>
+                              </div>
+                              <div class="flex-shrink-1">
+                                <select class="form-select form-select-sm" name="player2Char2" id="player2Char2" aria-label="Player 2 Character 2 Select"></select>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

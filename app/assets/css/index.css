@@ -82,7 +82,6 @@ body {
 
 #player1CharCol>div:nth-last-child(1 of div:not(.d-none)) img {
   border-top-right-radius: 0rem!important;
-  border-bottom-left-radius: var(--bs-border-radius)!important;
 }
 
 #player2CharCol>div:nth-child(1 of div:not(.d-none)) img {
@@ -91,6 +90,18 @@ body {
 }
 
 #player2CharCol>div:nth-last-child(1 of div:not(.d-none)) img {
+  border-bottom-right-radius: 0rem!important;
+}
+
+#player1CharCol select, #player2CharCol select {
+  border-radius: 0rem!important;
+}
+
+#player1CharCol>div:nth-last-child(1 of div:not(.d-none)) select {
+  border-bottom-left-radius: var(--bs-border-radius)!important;
+}
+
+#player2CharCol>div:nth-last-child(1 of div:not(.d-none)) select {
   border-bottom-right-radius: var(--bs-border-radius)!important;
 }
 
@@ -119,12 +130,23 @@ body {
 @media (max-width: 767.98px) {
   #player1CharCol>div:nth-last-child(1 of div:not(.d-none)) img {
     border-top-right-radius: var(--bs-border-radius)!important;
-    border-bottom-left-radius: 0rem!important;
   }
 
   #player2CharCol>div:nth-child(1 of div:not(.d-none)) img {
     border-top-right-radius: 0rem!important;
     border-bottom-left-radius: var(--bs-border-radius)!important;
+  }
+
+  #player2CharCol>div:nth-last-child(1 of div:not(.d-none)) img {
+    border-bottom-right-radius: var(--bs-border-radius)!important;
+  }
+
+  #player1CharCol>div:nth-last-child(1 of div:not(.d-none)) select {
+    border-bottom-left-radius: 0rem!important;
+  }
+
+  #player2CharCol>div:nth-last-child(1 of div:not(.d-none)) select {
+    border-bottom-right-radius: 0rem!important;
   }
 
   .img-char {
