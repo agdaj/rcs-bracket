@@ -23,7 +23,7 @@
               </h5>
               <div class="card-body">
                 <div class="row">
-                  <div class="col-12 col-sm-11 order-last order-sm-first">
+                  <div class="col-12 col-lg-10 order-last order-lg-first">
                     <div class="row">
                       <div class="col-12 col-sm-8 mb-3">
                         <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Tournament">
@@ -56,22 +56,34 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-12 col-sm-1 order-first order-sm-last">
+                  <div class="col-12 col-lg-2 order-first order-lg-last">
                     <div class="row justify-content-center">
-                      <div class="col-2 col-sm-12 mb-3">
+                      <div class="col-2 col-lg-4 order-lg-3 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="copyPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Copy Players To Clipboard"><img src="assets/images/svg/clipboard.svg" alt="Clipboard SVG"></button>
+                      </div>
+                      <div class="col-2 col-lg-4 order-lg-4 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="copySet" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Copy Set To Clipboard"><img src="assets/images/svg/clipboard-plus.svg" alt="Clipboard Plus SVG"></button>
+                      </div>
+                      <div class="col-2 col-lg-4 order-lg-5 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="toggleSkins" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Toggle Skin Visibility"><img src="assets/images/svg/toggle-on.svg" alt="Toggle SVG"></button>
+                      </div>
+                      <div class="col-2 col-lg-4 order-lg-0 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="refreshAssets" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Refresh Assets"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
+                      </div>
+                      <div class="col-2 col-lg-4 order-lg-1 mb-3">
                         <button class="btn btn-outline-secondary btn-sm" type="button" id="clearForm" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Clear Form"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
                       </div>
-                      <div class="col-2 col-sm-12 mb-3">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" id="refreshAssets" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Refresh Assets"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
+                      <div class="col-2 col-lg-4 order-lg-2 mb-3">
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="aboutApp" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="About App" data-bs-toggle="modal" data-bs-target="#aboutAppModal" aria-controls="aboutAppModal"><img src="assets/images/svg/info-circle.svg" alt="Info SVG"></button>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="row g-0">
-                  <div class="col-12 col-md-5">
+                <div class="d-flex flex-column flex-md-row">
+                  <div class="flex-grow-1">
                     <div class="card mb-3">
                       <div class="row g-0">
-                        <div class="col-md-2 d-flex flex-row flex-md-column" id="player1CharCol">
+                        <div class="col-md-3 d-flex flex-row flex-md-column" id="player1CharCol">
                           <div class="flex-grow-1">
                             <div class="d-flex flex-column h-100">
                               <div class="flex-grow-1">
@@ -97,7 +109,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-10">
+                        <div class="col-md-9">
                           <div class="card-header">
                             <div class="row justify-content-center justify-content-md-between">
                               <div class="col-3 order-1">
@@ -128,13 +140,12 @@
                                 </div>
                               </div>
                             </div>
-                            <hr class="border border-danger border-1 opacity-50">
-                            <div class="row mb-3">
+                            <div class="row skin-div mb-3">
                               <div class="col-12">
                                 <div id="player1SkinDiv" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
                               </div>
                             </div>
-                            <div class="row d-none doubles-char">
+                            <div class="row skin-div d-none doubles-char">
                               <div class="col-12">
                                 <div id="player1Skin2Div" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
                               </div>
@@ -144,26 +155,17 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-12 col-md-2">
-                    <div class="row justify-content-center mt-md-2">
-                      <div class="col-2 col-md-12 mb-3">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" id="resetScores" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Reset Scores"><img src="assets/images/svg/arrow-counterclockwise.svg" alt="Reset SVG"></button>
-                      </div>
-                      <div class="col-2 col-md-12 mb-3">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" id="swapPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Swap Players"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
-                      </div>
-                      <div class="col-2 col-md-12 mb-3">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" id="clearPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Clear Players"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
-                      </div>
-                      <div class="col-2 col-md-12 mb-3">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" id="copySet" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Copy Set To Clipboard"><img src="assets/images/svg/clipboard.svg" alt="Clipboard SVG"></button>
-                      </div>
+                  <div class="flex-shrink-1">
+                    <div class="d-flex flex-row flex-md-column h-100 justify-content-evenly justify-content-md-around align-items-center">
+                      <button class="btn btn-outline-secondary btn-sm mx-3 mb-3" type="button" id="resetScores" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Reset Scores"><img src="assets/images/svg/arrow-counterclockwise.svg" alt="Reset SVG"></button>
+                      <button class="btn btn-outline-secondary btn-sm mx-3 mb-3" type="button" id="swapPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Swap Players"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
+                      <button class="btn btn-outline-secondary btn-sm mx-3 mb-3" type="button" id="clearPlayers" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Clear Players"><img src="assets/images/svg/trash.svg" alt="Trash SVG"></button>
                     </div>
                   </div>
-                  <div class="col-12 col-md-5">
+                  <div class="flex-grow-1">
                     <div class="card mb-3">
                       <div class="row g-0">
-                        <div class="col-md-10">
+                        <div class="col-md-9">
                           <div class="card-header">
                             <div class="row justify-content-center justify-content-md-between">
                               <div class="col-3 offset-md-2 offset-xl-3 order-1 order-md-last">
@@ -194,20 +196,19 @@
                                 </div>
                               </div>
                             </div>
-                            <hr class="border border-danger border-1 opacity-50">
-                            <div class="row mb-3">
+                            <div class="row skin-div mb-3">
                               <div class="col-12">
                                 <div id="player2SkinDiv" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
                               </div>
                             </div>
-                            <div class="row d-none doubles-char">
+                            <div class="row skin-div d-none doubles-char">
                               <div class="col-12">
                                 <div id="player2Skin2Div" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-2 d-flex flex-row flex-md-column" id="player2CharCol">
+                        <div class="col-md-3 d-flex flex-row flex-md-column" id="player2CharCol">
                           <div class="flex-grow-1">
                             <div class="d-flex flex-column-reverse flex-md-column h-100">
                               <div class="flex-grow-1">
@@ -237,18 +238,22 @@
                     </div>
                   </div>
                 </div>
-                <div class="row g-0">
-                  <div class="col-12 col-sm-5 mb-3 mb-sm-0">
-                    <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Commentator 1">
-                      <span class="input-group-text"><img src="assets/images/svg/headset.svg" alt="Headset SVG"></span>
-                      <input class="form-control w-50" type="text" list="playerList" name="commentator1Name" id="commentator1Name" placeholder="Commentator 1">
-                      <input class="form-control" type="text" name="commentator1Pronouns" id="commentator1Pronouns" placeholder="Pronouns">
+                <div class="d-flex flex-column flex-sm-row">
+                  <div class="flex-grow-1">
+                    <div class="row mb-3 mb-sm-0">
+                      <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Commentator 1">
+                        <span class="input-group-text"><img src="assets/images/svg/headset.svg" alt="Headset SVG"></span>
+                        <input class="form-control w-50" type="text" list="playerList" name="commentator1Name" id="commentator1Name" placeholder="Commentator 1">
+                        <input class="form-control" type="text" name="commentator1Pronouns" id="commentator1Pronouns" placeholder="Pronouns">
+                      </div>
                     </div>
                   </div>
-                  <div class="col-12 col-sm-2 mb-3 mb-sm-0">
-                    <button class="btn btn-outline-secondary btn-sm" type="button" id="swapCommentators" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Swap Commentators"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
+                  <div class="flex-shrink-1">
+                    <div class="d-flex flex-row flex-md-column h-100 justify-content-evenly align-items-center">
+                      <button class="btn btn-outline-secondary btn-sm mx-3 mb-3 mb-sm-0" type="button" id="swapCommentators" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Swap Commentators"><img src="assets/images/svg/arrow-left-right.svg" alt="Swap SVG"></button>
+                    </div>
                   </div>
-                  <div class="col-12 col-sm-5">
+                  <div class="flex-grow-1">
                     <div class="input-group input-group-sm" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Commentator 2">
                       <span class="input-group-text"><img src="assets/images/svg/headset.svg" alt="Headset SVG"></span>
                       <input class="form-control w-50" type="text" list="playerList" name="commentator2Name" id="commentator2Name" placeholder="Commentator 2">
@@ -304,6 +309,19 @@
         <div class="modal-content" data-bs-dismiss="modal">
           <div class="modal-body">
             <div id="player2Char2SS"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="aboutAppModal" tabindex="-1" aria-labelledby="aboutAppModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content" data-bs-dismiss="modal">
+          <div class="modal-body">
+            <h1>RCS Bracket Manager</h1>
+            <p>Created by Jireh Agda (https://github.com/agdaj/rcs-bracket).</p>
+            <p>Made with Electron v25.6.0 (https://www.electronjs.org/), Bootstrap v5.2.1 (https://getbootstrap.com/), Bootstrap Icons v1.10.5 (https://icons.getbootstrap.com/), and Mousetrap v1.6.5 (https://craig.is/killing/mice).</p>
+            <p>Licensed under MIT.</p>
           </div>
         </div>
       </div>

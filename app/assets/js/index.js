@@ -998,6 +998,51 @@ const clearForm = async () => {
   clearCommentators();
 };
 
+const copyPlayersToClipboard = async () => {
+  let text = "";
+
+  const player1Name = document.getElementById('player1Name').value;
+  const player2Name = document.getElementById('player2Name').value;
+
+  text = `${player1Name} vs. ${player2Name}`;
+
+  navigator.clipboard.writeText(text);
+};
+
+const copySetToClipboard = async () => {
+  let text = "";
+
+  const player1Char = document.getElementById('player1Char').value;
+  const player2Char = document.getElementById('player2Char').value;
+  const player1Name = document.getElementById('player1Name').value;
+  const player2Name = document.getElementById('player2Name').value;
+  const round = document.getElementById('round').value;
+
+  const event = document.getElementById('eventName').value;
+  if (event.endsWith('Doubles')) {
+    const player1Char2 = document.getElementById('player1Char2').value;
+    const player2Char2 = document.getElementById('player2Char2').value;
+
+    text = `${player1Name} (${player1Char} / ${player1Char2}) vs. ${player2Name} (${player2Char} / ${player2Char2}) - ${round}`;
+  } else {
+    text = `${player1Name} (${player1Char}) vs. ${player2Name} (${player2Char}) - ${round}`;
+  }
+
+  navigator.clipboard.writeText(text);
+};
+
+const toggleCharacterIcons = async () => {
+  let skinDivs = document.getElementsByClassName('skin-div');
+  console.log(skinDivs)
+  for (let i = 0; i < skinDivs.length; i++) {
+    if (skinDivs[i].classList.contains('hide-skin-div')) {
+      skinDivs[i].classList.remove('hide-skin-div');
+    } else {
+      skinDivs[i].classList.add('hide-skin-div');
+    }
+  }
+};
+
 const setPlayer1Colour = async (hex) => {
   const player1ColourBtn = document.getElementById('player1ColourBtn');
   player1ColourBtn.replaceChildren();
@@ -1497,28 +1542,6 @@ const clearPlayers = async () => {
   loadPlayer2Character2(characterList[characterList.length - 1]);
 };
 
-const copySetToClipboard = async () => {
-  let text = "";
-
-  const player1Char = document.getElementById('player1Char').value;
-  const player2Char = document.getElementById('player2Char').value;
-  const player1Name = document.getElementById('player1Name').value;
-  const player2Name = document.getElementById('player2Name').value;
-  const round = document.getElementById('round').value;
-
-  const event = document.getElementById('eventName').value;
-  if (event.endsWith('Doubles')) {
-    const player1Char2 = document.getElementById('player1Char2').value;
-    const player2Char2 = document.getElementById('player2Char2').value;
-
-    text = `${player1Name} (${player1Char} / ${player1Char2}) vs. ${player2Name} (${player2Char} / ${player2Char2}) - ${round}`;
-  } else {
-    text = `${player1Name} (${player1Char}) vs. ${player2Name} (${player2Char}) - ${round}`;
-  }
-
-  navigator.clipboard.writeText(text);
-};
-
 const clearCommentators = async () => {
   document.getElementById('commentator1Name').value = '';
   document.getElementById('commentator2Name').value = '';
@@ -1796,12 +1819,61 @@ document.getElementById('round').addEventListener('change', (event) => {
   adjustFormWithRound(event.target.value);
 });
 
+document.getElementById('refreshAssets').addEventListener('click', () => {
+  loadCharacterList();
+});
+
 document.getElementById('clearForm').addEventListener('click', () => {
   clearForm();
 });
 
-document.getElementById('refreshAssets').addEventListener('click', () => {
-  loadCharacterList();
+document.getElementById('copyPlayers').addEventListener('click', (event) => {
+  copyPlayersToClipboard()
+    .then(() => {
+      const btnTarget = event.currentTarget;
+      btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-check.svg');
+      setTimeout(() => {
+        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard.svg');
+      }, 1000);
+    })
+    .catch(err => {
+      console.log(err);
+      const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
+      toast.show();
+    });
+});
+
+document.getElementById('copySet').addEventListener('click', (event) => {
+  copySetToClipboard()
+    .then(() => {
+      const btnTarget = event.currentTarget;
+      btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-check.svg');
+      setTimeout(() => {
+        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-plus.svg');
+      }, 1000);
+    })
+    .catch(err => {
+      console.log(err);
+      const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
+      toast.show();
+    });
+});
+
+document.getElementById('toggleSkins').addEventListener('click', (event) => {
+  toggleCharacterIcons()
+    .then(() => {
+      const btnTarget = event.currentTarget;
+      if (btnTarget.children.item(0).getAttribute('src') == 'assets/images/svg/toggle-on.svg') {
+        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/toggle-off.svg');
+      } else {
+        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/toggle-on.svg');
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
+      toast.show();
+    });
 });
 
 document.getElementById('player1Name').addEventListener('input', (event) => {
@@ -1848,22 +1920,6 @@ document.getElementById('swapPlayers').addEventListener('click', () => {
 
 document.getElementById('clearPlayers').addEventListener('click', () => {
   clearPlayers();
-});
-
-document.getElementById('copySet').addEventListener('click', (event) => {
-  copySetToClipboard()
-    .then(() => {
-      const btnTarget = event.currentTarget;
-      btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard-check.svg');
-      setTimeout(() => {
-        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/clipboard.svg');
-      }, 1000);
-    })
-    .catch(err => {
-      console.log(err);
-      const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
-      toast.show();
-    });
 });
 
 document.getElementById('swapCommentators').addEventListener('click', () => {
