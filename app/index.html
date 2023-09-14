@@ -65,7 +65,7 @@
                         <button class="btn btn-outline-secondary btn-sm" type="button" id="copySet" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Copy Set To Clipboard"><img src="assets/images/svg/clipboard-plus.svg" alt="Clipboard Plus SVG"></button>
                       </div>
                       <div class="col-2 col-lg-4 order-lg-5 mb-3">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" id="toggleSkins" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Toggle Skin Visibility"><img src="assets/images/svg/toggle-on.svg" alt="Toggle SVG"></button>
+                        <button class="btn btn-outline-secondary btn-sm" type="button" id="toggleSkins" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Toggle Skin Visibility" data-bs-toggle="collapse" data-bs-target=".skin-div" aria-expanded="false" aria-controls="player1SkinDiv player1Skin2Div player2SkinDiv player2Ski2Div"><img src="assets/images/svg/toggle-on.svg" alt="Toggle SVG"></button>
                       </div>
                       <div class="col-2 col-lg-4 order-lg-0 mb-3">
                         <button class="btn btn-outline-secondary btn-sm" type="button" id="refreshAssets" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Refresh Assets"><img src="assets/images/svg/arrow-repeat.svg" alt="Repeat SVG"></button>
@@ -140,12 +140,12 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="row skin-div mb-3">
+                            <div class="row collapse show skin-div mb-3">
                               <div class="col-12">
                                 <div id="player1SkinDiv" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
                               </div>
                             </div>
-                            <div class="row skin-div d-none doubles-char">
+                            <div class="row collapse show skin-div d-none doubles-char">
                               <div class="col-12">
                                 <div id="player1Skin2Div" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
                               </div>
@@ -196,12 +196,12 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="row skin-div mb-3">
+                            <div class="row collapse show skin-div mb-3">
                               <div class="col-12">
                                 <div id="player2SkinDiv" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
                               </div>
                             </div>
-                            <div class="row skin-div d-none doubles-char">
+                            <div class="row collapse show skin-div d-none doubles-char">
                               <div class="col-12">
                                 <div id="player2Skin2Div" data-bs-toggle-tooltip="tooltip" data-bs-placement="top" data-bs-title="Select Skin"></div>
                               </div>

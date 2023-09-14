@@ -1031,18 +1031,6 @@ const copySetToClipboard = async () => {
   navigator.clipboard.writeText(text);
 };
 
-const toggleCharacterIcons = async () => {
-  let skinDivs = document.getElementsByClassName('skin-div');
-  console.log(skinDivs)
-  for (let i = 0; i < skinDivs.length; i++) {
-    if (skinDivs[i].classList.contains('hide-skin-div')) {
-      skinDivs[i].classList.remove('hide-skin-div');
-    } else {
-      skinDivs[i].classList.add('hide-skin-div');
-    }
-  }
-};
-
 const setPlayer1Colour = async (hex) => {
   const player1ColourBtn = document.getElementById('player1ColourBtn');
   player1ColourBtn.replaceChildren();
@@ -1709,7 +1697,6 @@ const saveInfoObjIndividual = async (infoObj) => {
     }
 
     if (!success) {
-      console.log(key, value)
       const toast = new bootstrap.Toast(document.getElementById('saveInfoFailToast'));
       toast.show();
       return;
@@ -1860,20 +1847,12 @@ document.getElementById('copySet').addEventListener('click', (event) => {
 });
 
 document.getElementById('toggleSkins').addEventListener('click', (event) => {
-  toggleCharacterIcons()
-    .then(() => {
-      const btnTarget = event.currentTarget;
-      if (btnTarget.children.item(0).getAttribute('src') == 'assets/images/svg/toggle-on.svg') {
-        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/toggle-off.svg');
-      } else {
-        btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/toggle-on.svg');
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      const toast = new bootstrap.Toast(document.getElementById('generalFailToast'));
-      toast.show();
-    });
+  const btnTarget = event.currentTarget;
+  if (btnTarget.children.item(0).getAttribute('src') == 'assets/images/svg/toggle-on.svg') {
+    btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/toggle-off.svg');
+  } else {
+    btnTarget.children.item(0).setAttribute('src', 'assets/images/svg/toggle-on.svg');
+  }
 });
 
 document.getElementById('player1Name').addEventListener('input', (event) => {
