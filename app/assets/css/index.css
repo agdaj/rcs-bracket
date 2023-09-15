@@ -8,6 +8,10 @@ body {
   width: 16px;
 }
 
+.btn-link-danger img {
+  filter: invert(16%) sepia(100%) saturate(7438%) hue-rotate(358deg) brightness(91%) contrast(121%);
+}
+
 .offcanvas-start .btn-offcanvas {
   left: 400px;
   visibility: visible;

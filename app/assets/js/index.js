@@ -43,8 +43,9 @@ const colourObj = [
   }
 ];
 
-let saveFormat = null;
+let saveFormat = 'json';
 let characterList = [];
+let customFieldsObj = {};
 let playerObj = {};
 
 // start.gg Interfacing
@@ -491,6 +492,151 @@ const createIdentifierLabel = (identifier) => {
   return identifierLabel;
 };
 
+// Custom Fields Interfacing
+
+const createCustomGroup = (groupName = '', fieldsObj = {}) => {
+  let groupId = 0;
+  while (document.getElementById(`custom-group-${groupId}-name`)) {
+    groupId ++;
+  }
+
+  let customGroupItem = document.createElement('li');
+  customGroupItem.classList.add('list-group-item');
+
+  let customGroupDiv = document.createElement('div');
+  customGroupDiv.classList.add('d-flex', 'd-flex-row', 'mb-2');
+
+  let customGroupRemoveBtn = document.createElement('button');
+  customGroupRemoveBtn.classList.add('btn', 'btn-link', 'btn-link-danger', 'btn-sm', 'flex-shrink-1', 'ps-0', 'pe-1');
+  customGroupRemoveBtn.setAttribute('type', 'button');
+  customGroupRemoveBtn.addEventListener('click', (event) => { event.currentTarget.parentNode.parentNode.remove() });
+
+  let customGroupRemoveImg = document.createElement('img');
+  customGroupRemoveImg.setAttribute('src', 'assets/images/svg/folder-minus.svg');
+
+  customGroupRemoveBtn.appendChild(customGroupRemoveImg);
+
+  let customGroupInputGroup = document.createElement('div');
+  customGroupInputGroup.classList.add('input-group', 'input-group-sm', 'flex-grow-1');
+
+  let customGroupSpan = document.createElement('span');
+  customGroupSpan.classList.add('input-group-text');
+  customGroupSpan.textContent = 'Name';
+
+  let customGroupInput = document.createElement('input');
+  customGroupInput.classList.add('form-control');
+  customGroupInput.setAttribute('type', 'text');
+  customGroupInput.setAttribute('id', `custom-group-${groupId}-name`);
+  customGroupInput.setAttribute('name', `custom-group-${groupId}-name`);
+  customGroupInput.setAttribute('value', groupName);
+  customGroupInput.required = true;
+
+  customGroupInputGroup.appendChild(customGroupSpan);
+  customGroupInputGroup.appendChild(customGroupInput);
+
+  customGroupDiv.appendChild(customGroupRemoveBtn);
+  customGroupDiv.appendChild(customGroupInputGroup);
+
+  let customFieldList = document.createElement('ul');
+  customFieldList.classList.add('list-group', 'list-group-flush');
+
+  let fieldId = 0;
+  let customFieldItems = [];
+  for (const [fieldName, fieldText] of Object.entries(fieldsObj)) {
+    customFieldItems.push(createCustomField(groupId, fieldId, fieldName, fieldText));
+    fieldId ++;
+  }
+
+  let customFieldAddBtn = document.createElement('button');
+  customFieldAddBtn.classList.add('list-group-item', 'list-group-item-action');
+  customFieldAddBtn.setAttribute('type', 'button');
+  customFieldAddBtn.addEventListener('click', (event) => {
+    event.currentTarget.parentNode.insertBefore(createCustomField(groupId), event.currentTarget);
+  });
+
+  let customFieldAddImg = document.createElement('img');
+  customFieldAddImg.setAttribute('src', 'assets/images/svg/plus-circle.svg');
+
+  customFieldAddBtn.appendChild(customFieldAddImg);
+  customFieldAddBtn.appendChild(document.createTextNode(" Add Field"));
+
+  for (let i = 0; i < customFieldItems.length; i++) {
+    customFieldList.appendChild(customFieldItems[i]);
+  }
+  customFieldList.appendChild(customFieldAddBtn);
+
+  customGroupItem.appendChild(customGroupDiv);
+  customGroupItem.appendChild(customFieldList);
+  return customGroupItem;
+};
+
+const createCustomField = (groupId, fieldId = 0, fieldName = '', fieldText = '') => {
+  while (document.getElementById(`custom-field-${groupId}-${fieldId}-name`)) {
+    fieldId ++;
+  }
+
+  let customFieldItem = document.createElement('li');
+  customFieldItem.classList.add('list-group-item');
+
+  let customFieldDiv = document.createElement('div');
+  customFieldDiv.classList.add('d-flex', 'd-flex-row');
+
+  let customFieldRemoveBtn = document.createElement('button');
+  customFieldRemoveBtn.classList.add('btn', 'btn-link', 'btn-link-danger', 'btn-sm', 'flex-shrink-1', 'ps-0', 'pe-1');
+  customFieldRemoveBtn.setAttribute('type', 'button');
+  customFieldRemoveBtn.addEventListener('click', (event) => { event.currentTarget.parentNode.parentNode.remove() });
+
+  let customFieldRemoveImg = document.createElement('img');
+  customFieldRemoveImg.setAttribute('src', 'assets/images/svg/dash-circle.svg');
+
+  customFieldRemoveBtn.appendChild(customFieldRemoveImg);
+
+  let customFieldInputGroup = document.createElement('div');
+  customFieldInputGroup.classList.add('input-group', 'input-group-sm', 'flex-grow-1');
+
+  let customFieldNameInput = document.createElement('input');
+  customFieldNameInput.classList.add('form-control');
+  customFieldNameInput.setAttribute('type', 'text');
+  customFieldNameInput.setAttribute('id', `custom-field-${groupId}-${fieldId}-name`);
+  customFieldNameInput.setAttribute('name', `custom-field-${groupId}-${fieldId}-name`);
+  customFieldNameInput.setAttribute('placeholder', 'Field');
+  customFieldNameInput.setAttribute('value', fieldName);
+  customFieldNameInput.required = true;
+
+  let customFieldTextInput = document.createElement('input');
+  customFieldTextInput.classList.add('form-control', 'w-50');
+  customFieldTextInput.setAttribute('type', 'text');
+  customFieldTextInput.setAttribute('id', `custom-field-${groupId}-${fieldId}-text`);
+  customFieldTextInput.setAttribute('name', `custom-field-${groupId}-${fieldId}-text`);
+  customFieldTextInput.setAttribute('placeholder', 'Text');
+  customFieldTextInput.setAttribute('value', fieldText);
+
+  customFieldInputGroup.appendChild(customFieldNameInput);
+  customFieldInputGroup.appendChild(customFieldTextInput);
+
+  customFieldDiv.appendChild(customFieldRemoveBtn);
+  customFieldDiv.appendChild(customFieldInputGroup);
+
+  customFieldItem.appendChild(customFieldDiv);
+  return customFieldItem;
+};
+
+const createCustomGroupAddBtn = () => {
+  let customGroupAddBtn = document.createElement('button');
+  customGroupAddBtn.classList.add('list-group-item', 'list-group-item-action');
+  customGroupAddBtn.setAttribute('type', 'button');
+  customGroupAddBtn.addEventListener('click', (event) => {
+    event.currentTarget.parentNode.insertBefore(createCustomGroup(), event.currentTarget);
+  });
+
+  let customGroupAddImg = document.createElement('img');
+  customGroupAddImg.setAttribute('src', 'assets/images/svg/folder-plus.svg');
+
+  customGroupAddBtn.appendChild(customGroupAddImg);
+  customGroupAddBtn.appendChild(document.createTextNode(" Add Group"));
+  return customGroupAddBtn;
+};
+
 // Initialize functions
 
 const loadSettings = async () => {
@@ -552,7 +698,7 @@ const populateTournaments = async (apiToken) => {
       toast.show();
 
       document.getElementById('spinnerSGG').classList.add('d-none');
-    })
+    });
 };
 
 const populateEvents = async (tournamentId, apiToken) => {
@@ -580,7 +726,7 @@ const populateEvents = async (tournamentId, apiToken) => {
       toast.show();
 
       document.getElementById('spinnerSGG').classList.add('d-none');
-    })
+    });
 };
 
 const populateSets = async (eventId, apiToken) => {
@@ -890,7 +1036,7 @@ const populateSets = async (eventId, apiToken) => {
       document.getElementById('setSelector').classList.add('d-none');
       document.getElementById('setStreamSelector').classList.add('d-none');
       document.getElementById('spinnerSGG').classList.add('d-none');
-    })
+    });
 };
 
 const fillMatchInfo = async (matchNode) => {
@@ -1569,6 +1715,26 @@ const updateSaveSettingsObj = async (newSaveSettingsObj) => {
   }
 };
 
+const loadCustomFieldsObj = async () => {
+  customFieldsObj = await window.fsAPI.fetch.customFieldsObj();
+};
+
+const createCustomFieldsFormFromObj = async (customFieldsObj) => {
+  const customGroupsList = document.getElementById('customGroupsList');
+  customGroupsList.replaceChildren();
+
+  for (const [groupName, fieldsObj] of Object.entries(customFieldsObj)) {
+    customGroupsList.appendChild(createCustomGroup(groupName, fieldsObj));
+  };
+  customGroupsList.appendChild(createCustomGroupAddBtn());
+}
+
+const updateCustomFieldsObj = async (newCustomFieldsObj) => {
+  customFieldsObj = newCustomFieldsObj;
+
+  window.fsAPI.save.customFieldsObj(customFieldsObj);
+};
+
 const editPlayerObj = async (newPlayerObj) => {
   validatePlayerObj(newPlayerObj)
     .then(newPlayerObj => updatePlayerObj(newPlayerObj))
@@ -1707,12 +1873,44 @@ const saveInfoObjIndividual = async (infoObj) => {
   toast.show();
 };
 
+const saveCustomFieldsObj = async (customFieldsObj) => {
+  let success = await window.fsAPI.save.infoObj(customFieldsObj, 'custom_fields.json');
+  if (success) {
+    const toast = new bootstrap.Toast(document.getElementById('saveCustomFieldsSuccessToast'));
+    toast.show();
+  } else {
+    const toast = new bootstrap.Toast(document.getElementById('saveCustomFieldsFailToast'));
+    toast.show();
+  }
+};
+
+const saveCustomFieldsObjIndividual = async (customFieldsObj) => {
+  for (const [_, fieldsObj] of Object.entries(customFieldsObj)) {
+    for (const [key, value] of Object.entries(fieldsObj)) {
+      let fname = `${key}.txt`;
+      let text = value;
+
+      let success = await window.fsAPI.save.infoText(text, fname);
+
+      if (!success) {
+        const toast = new bootstrap.Toast(document.getElementById('saveCustomFieldsFailToast'));
+        toast.show();
+        return;
+      }
+    }
+  }
+
+  const toast = new bootstrap.Toast(document.getElementById('saveCustomFieldsSuccessToast'));
+  toast.show();
+};
+
 // Call functions for initial rendering
 
 loadSettings();
 loadPlayer1ColourSet();
 loadPlayer2ColourSet();
 loadCharacterList();
+loadCustomFieldsObj();
 loadPlayerObj();
 
 // Set listeners
@@ -1944,6 +2142,9 @@ document.getElementById('offcanvasSettings').addEventListener('show.bs.offcanvas
       saveFormatInputs[i].checked = false;
     }
   }
+
+  createCustomFieldsFormFromObj(customFieldsObj);
+
   document.getElementById('editPlayersJSON').value = JSON.stringify(playerObj, null, 2);
 });
 
@@ -1953,6 +2154,37 @@ document.getElementById('saveSettingsForm').addEventListener('submit', (event) =
   const serializedInfo = Object.fromEntries(formData.entries());
 
   updateSaveSettingsObj(serializedInfo);
+});
+
+document.getElementById('customFieldsForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const serializedInfo = Object.fromEntries(formData.entries());
+
+  let customFieldsObj = {};
+  for (const [key, value] of Object.entries(serializedInfo)) {
+    if (key.startsWith('custom-group-')) {
+      if (!(value in Object.keys(customFieldsObj))) {
+        customFieldsObj[value] = {};
+      }
+    } else if (key.startsWith('custom-field-') && key.endsWith('-text')) {
+      let groupId = key.split('-')[2];
+      let fieldId = key.split('-')[3];
+      let group = serializedInfo[`custom-group-${groupId}-name`];
+      let field = serializedInfo[`custom-field-${groupId}-${fieldId}-name`];
+      if (!Object.keys(customFieldsObj).includes(group)) {
+        customFieldsObj[group] = {};
+      }
+      customFieldsObj[group][field] = value;
+    }
+  }
+
+  updateCustomFieldsObj(customFieldsObj);
+  if (saveFormat === 'individual') {
+    saveCustomFieldsObjIndividual(customFieldsObj);
+  } else {
+    saveCustomFieldsObj(customFieldsObj);
+  }
 });
 
 document.getElementById('playersForm').addEventListener('submit', (event) => {

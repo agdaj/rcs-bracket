@@ -119,6 +119,11 @@ app.whenReady().then(() => {
             .then((result) => { return JSON.parse(result) })
             .catch(() => { return {} });
   });
+  ipcMain.handle('fetch:custom-fields-obj', () => {
+    return fs.promises.readFile(path.join(app.getPath('userData'), 'custom_fields.json'), 'utf-8')
+            .then((result) => { return JSON.parse(result) })
+            .catch(() => { return {} });
+  });
   ipcMain.handle('save:settings-obj', (_, obj) => {
     return fs.promises.writeFile(path.join(app.getPath('userData'), 'settings.json'), JSON.stringify(obj), 'utf-8')
             .then(() => {
@@ -129,6 +134,11 @@ app.whenReady().then(() => {
   });
   ipcMain.handle('save:player-obj', (_, obj) => {
     return fs.promises.writeFile(path.join(app.getPath('userData'), 'players.json'), JSON.stringify(obj), 'utf-8')
+            .then(() => { return true })
+            .catch(() => { return false });
+  });
+  ipcMain.handle('save:custom-fields-obj', (_, obj) => {
+    return fs.promises.writeFile(path.join(app.getPath('userData'), 'custom_fields.json'), JSON.stringify(obj), 'utf-8')
             .then(() => { return true })
             .catch(() => { return false });
   });

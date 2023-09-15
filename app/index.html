@@ -473,6 +473,9 @@
             <button class="nav-link active" id="save-tab" data-bs-toggle="tab" data-bs-target="#save-tab-pane" type="button" role="tab" aria-controls="save-tab-pane" aria-selected="true">Save</button>
           </li>
           <li class="nav-item" role="presentation">
+            <button class="nav-link" id="custom-fields-tab" data-bs-toggle="tab" data-bs-target="#custom-fields-tab-pane" type="button" role="tab" aria-controls="custom-fields-tab-pane" aria-selected="false">Custom Fields</button>
+          </li>
+          <li class="nav-item" role="presentation">
             <button class="nav-link" id="players-tab" data-bs-toggle="tab" data-bs-target="#players-tab-pane" type="button" role="tab" aria-controls="players-tab-pane" aria-selected="false">Players</button>
           </li>
           <li class="nav-item" role="presentation">
@@ -495,7 +498,17 @@
                 </label>
               </div>
               <div class="mb-3">
-                <button class="btn btn-success float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Update Save Settings"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
+                <button class="btn btn-success btn-sm float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Update Save Settings"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
+              </div>
+            </form>
+          </div>
+          <div class="tab-pane fade" id="custom-fields-tab-pane" role="tabpanel" aria-labelledby="obs-tab" tabindex="0">
+            <form id="customFieldsForm">
+              <div class="mb-3">
+                <ul class="list-group list-group-flush" id="customGroupsList"></ul>
+              </div>
+              <div class="mb-3">
+                <button class="btn btn-success btn-sm float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Save Custom Fields"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
               </div>
             </form>
           </div>
@@ -506,7 +519,7 @@
                 <textarea class="form-control" name="editPlayersJSON" id="editPlayersJSON" rows="6"></textarea>
               </div>
               <div class="mb-3">
-                <button class="btn btn-success float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Update Players Info"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
+                <button class="btn btn-success btn-sm float-end" type="submit" data-bs-toggle-tooltip="tooltip" data-bs-placement="left" data-bs-title="Update Players Info"><img class="btn-close-white" src="assets/images/svg/save.svg" alt="Save SVG"></button>
               </div>
             </form>
           </div>
@@ -556,6 +569,22 @@
           <div class="d-flex">
             <div class="toast-body">
               Failed to update save settings!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-success border-0" id="saveCustomFieldsSuccessToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Custom fields successfully saved!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+        <div class="toast align-items-center text-bg-danger border-0" id="saveCustomFieldsFailToast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Failed to save custom fields!
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>
