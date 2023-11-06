@@ -1053,6 +1053,7 @@ const fillMatchInfo = async (matchNode) => {
 
   if (
     matchNode.slots[0]['entrant']['participants'].length == 1 &&
+    matchNode.slots[0]['entrant']['participants'][0]['user'] &&
     matchNode.slots[0]['entrant']['participants'][0]['user']['genderPronoun']
   ) {
     let player1Pronouns = matchNode.slots[0]['entrant']['participants'][0]['user']['genderPronoun'];
@@ -1063,6 +1064,7 @@ const fillMatchInfo = async (matchNode) => {
 
   if (
     matchNode.slots[1]['entrant']['participants'].length == 1 &&
+    matchNode.slots[1]['entrant']['participants'][0]['user'] &&
     matchNode.slots[1]['entrant']['participants'][0]['user']['genderPronoun']
   ) {
     let player2Pronouns = matchNode.slots[1]['entrant']['participants'][0]['user']['genderPronoun'];
